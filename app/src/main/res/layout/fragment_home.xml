@@ -1,22 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/text_home"
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.lumisdinos.chessclock.ui.home.HomeViewModel" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        tools:context=".ui.home.HomeFragment">
+
+        <View
+            android:id="@+id/topButtonView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/female_icon_color"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/ripple"
+            android:onClick="@{() -> viewModel.clickOnTopButtonView()}"
+            app:layout_constraintBottom_toTopOf="@+id/centralPanelLLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_weight="6" />
+
+
+        <LinearLayout
+            android:id="@+id/centralPanelLLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:background="@color/colorGray"
+            app:layout_constraintBottom_toTopOf="@+id/bottomButtonView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topButtonView"
+            app:layout_constraintVertical_weight="1" >
+
+            <ImageButton
+                android:id="@+id/showMenuIv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/ripple"
+                android:onClick="@{() -> viewModel.clickShowMenu()}"
+                android:contentDescription="@string/drag"
+                android:paddingStart="@dimen/space_normal"
+                android:paddingEnd="@dimen/space_normal"
+                android:src="@drawable/ic_chevron_right_black_24dp" />
+
+            <TextView
+                android:id="@+id/timeTv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginStart="@dimen/space_small"
+                android:text="@string/_15_10"/>
+
+            <ImageButton
+                android:id="@+id/deleteIb"
+                android:background="@drawable/ripple"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:onClick="@{() -> viewModel.clickOnPause()}"
+                android:layout_marginStart="@dimen/space_small"
+                android:layout_marginEnd="@dimen/space_normal"
+                android:src="@drawable/ic_pause_black_24dp"
+                tools:ignore="ContentDescription" />
+
+
+        </LinearLayout>
+
+
+        <View
+            android:id="@+id/bottomButtonView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/male_icon_color"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/ripple"
+            android:onClick="@{() -> viewModel.clickOnBottomButtonView()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/centralPanelLLayout"
+            app:layout_constraintVertical_weight="6" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/minEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/space_normal"
+        android:inputType="number"
+        android:hint="@string/min"
+        android:lines="1"
+        android:maxLines="1"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
+
+    <EditText
+        android:id="@+id/secEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/space_normal"
+        android:inputType="number"
+        android:hint="@string/sec"
+        android:lines="1"
+        android:maxLines="1"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor"/>
+
+    <EditText
+        android:id="@+id/incEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/space_normal"
+        android:layout_marginEnd="@dimen/space_normal"
+        android:inputType="number"
+        android:hint="@string/inc"
+        android:lines="1"
+        android:maxLines="1"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor"/>
+
+</LinearLayout>

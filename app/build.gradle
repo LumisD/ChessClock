@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'androidx.navigation.safeargs'
 
 android {
     compileSdkVersion 29
@@ -34,6 +38,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    dataBinding {
+        enabled = true
+    }
+
 
 }
 
@@ -53,4 +61,19 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //analytics
+    // Recommended: Add the Firebase SDK for Google Analytics.
+    //implementation 'com.google.firebase:firebase-analytics-ktx:17.5.0'
+    //implementation 'com.google.firebase:firebase-analytics:17.5.0'
+
+    // Add the Firebase Crashlytics SDK.
+    //implementation 'com.google.firebase:firebase-crashlytics-ktx:17.2.1'
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    //Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    //Graphics
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
