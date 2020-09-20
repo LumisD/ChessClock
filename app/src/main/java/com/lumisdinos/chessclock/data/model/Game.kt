@@ -15,7 +15,10 @@ data class Game constructor(
     @ColumnInfo(name = "white_rest") var whiteRest: Long = 0L,
     @ColumnInfo(name = "black_rest") var blackRest: Long = 0L,
 
+    @ColumnInfo(name = "paused_millis") var pausedMillis: Long = 0L,//full time when was paused
+    @ColumnInfo(name = "paused_start_millis") var pausedStartMillis: Long = 0L,//last time it was paused
+
     @ColumnInfo(name = "is_white_first") var isWhiteFirst: Boolean = true,
-    @ColumnInfo(name = "is_wh_moving") var isWhMoving: Boolean = true,
+    @ColumnInfo(name = "is_first_player_moving") var isFirstPlayerMoving: Boolean = true,
     @ColumnInfo(name = "is_paused") var isPaused: Boolean = false
 )

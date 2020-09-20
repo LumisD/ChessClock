@@ -1,6 +1,7 @@
 package com.lumisdinos.chessclock.common
 
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
@@ -50,6 +51,20 @@ object BindingAdapters {
         }
 
         textView.text = builder.toString()
+    }
+
+
+    @JvmStatic
+    @BindingAdapter("changePausedIcon")
+    fun convertChangePausedIcon(imageButton: ImageButton, changedToPauseIconLive: LiveData<Boolean>) {
+        val changedToPause = changedToPauseIconLive.value ?: true
+       if (changedToPause) {
+           Timber.d("qwer changePausedIcon if (changedToPause)")
+           imageButton.setImageResource(R.drawable.ic_pause_black_24dp)
+       } else {
+           Timber.d("qwer changePausedIcon if NOT changedToPause)")
+           imageButton.setImageResource(R.drawable.ic_play_arrow_black_24dp)
+       }
     }
 
 

@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lumisdinos.chessclock.common.utils.strToInt
 import com.lumisdinos.chessclock.data.AppConfig
-import com.lumisdinos.chessclock.data.Constants._15_10
 import com.lumisdinos.chessclock.data.model.Game
 import com.lumisdinos.chessclock.data.repository.GameRepository
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.lang.StringBuilder
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
@@ -29,6 +27,7 @@ class HomeViewModel @Inject constructor(
     var game: Game? = null
 
     val timeControlLive = MutableLiveData<String>()
+    val changedToPauseIconLive = MutableLiveData<Boolean>()
 
     var timer: CountDownTimer? = null
 
@@ -78,10 +77,31 @@ class HomeViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 if (game == null) return@withContext
                 if (startFirstMove(false)) {
-                    game?.let { it.isWhMoving = false }//handleNewMove inverses it
+                    game?.let { it.isFirstPlayerMoving = false }//handleNewMove inverses it
                 }
             }
-            handleNewMove()
+            game?.let {
+                if (it.isPaused) {
+
+                    var blackIsMoving = false
+                    if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
+                        blackIsMoving = true
+                    } else if (it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                        blackIsMoving = true
+                    }
+
+                    if (blackIsMoving) {
+                        //only proceed if before pause it was black moving
+                        clickOnPause()
+                        return@launch
+                    }
+                } else {
+                    handleNewMove()
+                }
+
+            }
+
+
         }
     }
 
@@ -92,21 +112,62 @@ class HomeViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 if (game == null) return@withContext
                 if (startFirstMove(true)) {
-                    game?.let { it.isWhMoving = true }//handleNewMove inverses it
+                    game?.let { it.isFirstPlayerMoving = false }//handleNewMove inverses it
                 }
             }
-            handleNewMove()
+
+            game?.let {
+                if (it.isPaused) {
+
+                    var whiteIsMoving = false
+                    if (it.isFirstPlayerMoving && it.isWhiteFirst) {
+                        whiteIsMoving = true
+                    } else if (!it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                        whiteIsMoving = true
+                    }
+
+                    if (whiteIsMoving) {
+                        //only proceed if before pause it was white moving
+                        clickOnPause()
+                        return@launch
+                    }
+                } else {
+                    handleNewMove()
+                }
+
+            }
+
+
         }
 
     }
 
 
     fun clickOnPause() {
-        Timber.d("qwer clickOnPause")
-        timer?.let { it.cancel() }
-        timer = null
-        game?.let { it.isPaused = true }
-
+        game?.let {
+            if (it.isPaused) {
+                Timber.d("qwer clickOnPause if (it.isPaused)")
+                //start again
+                it.isPaused = false
+                startTimer()
+                //add paused time
+                val pausedTime = System.currentTimeMillis() - it.pausedStartMillis
+                it.pausedMillis += pausedTime
+                it.pausedStartMillis = 0L
+                changedToPauseIconLive.postValue(true)
+            } else {
+                Timber.d("qwer clickOnPause if NOT it.isPaused)")
+                //pause time
+                timer?.let {
+                    Timber.d("qwer clickOnPause timer.cancell")
+                    it.cancel()
+                }
+                timer = null
+                it.isPaused = true
+                it.pausedStartMillis = System.currentTimeMillis()
+                changedToPauseIconLive.postValue(false)
+            }
+        }
     }
 
 
@@ -120,8 +181,11 @@ class HomeViewModel @Inject constructor(
         Timber.d("qwer handleNewMove")
         game?.let {
             it.systemMillis = System.currentTimeMillis()
-            it.isWhMoving = !it.isWhMoving
+            it.isFirstPlayerMoving = !it.isFirstPlayerMoving
+            Timber.d("qwer handleNewMove isFirstPlayerMoving: %s", it.isFirstPlayerMoving)
         }
+        timer?.let { it.cancel() }
+        timer = null
         startTimer()
     }
 
@@ -130,14 +194,14 @@ class HomeViewModel @Inject constructor(
 //        timer = fixedRateTimer(period = 100L) {
 //            Timber.d("qwer startTimer")
 //        }
-        val millFuture = if (game!!.isWhMoving) game!!.whiteRest else game!!.blackRest
+        val millFuture = if (game!!.isFirstPlayerMoving) game!!.whiteRest else game!!.blackRest
         Timber.d("qwer startTimer millFuture: %s", millFuture)
 
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 Timber.d("qwer startTimer onTick")
                 game?.let {
-                    if (it.isWhMoving) {
+                    if (it.isFirstPlayerMoving) {
                         it.whiteRest -= 100L
                     } else {
                         it.blackRest -= 100L
@@ -155,21 +219,17 @@ class HomeViewModel @Inject constructor(
                 game?.let {
                     //define which side expired: who started
                     Timber.d(
-                        "qwer startTimer onFinish isWhMoving: %s, isWhiteFirst: %s",
-                        it.isWhMoving,
+                        "qwer startTimer onFinish isFirstPlayerMoving: %s, isWhiteFirst: %s",
+                        it.isFirstPlayerMoving,
                         it.isWhiteFirst
                     )
-                    if (it.isWhMoving && it.isWhiteFirst) {
+                    if (it.isFirstPlayerMoving) {
                         sideWhichExpired = "white"
-                    } else if (!it.isWhMoving && it.isWhiteFirst) {
-                        sideWhichExpired = "black"
-                    } else if (!it.isWhMoving && !it.isWhiteFirst) {
-                        sideWhichExpired = "white"
-                    } else if (it.isWhMoving && !it.isWhiteFirst) {
+                    } else if (!it.isFirstPlayerMoving) {
                         sideWhichExpired = "black"
                     }
                     //set to 0 rest time
-                    if (it.isWhMoving) it.whiteRest = 0L else it.blackRest = 0L
+                    if (it.isFirstPlayerMoving) it.whiteRest = 0L else it.blackRest = 0L
                     //refresh
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                 }

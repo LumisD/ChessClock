@@ -3,7 +3,7 @@ package com.lumisdinos.chessclock.data
 object AppConfig {
 
     var min = 0//15
-    var sec = 2//0
+    var sec = 15//0
     var inc = 0//10
 
 

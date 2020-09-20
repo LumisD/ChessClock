@@ -75,7 +75,7 @@
                 android:layout_height="match_parent"
                 android:onClick="@{() -> viewModel.clickOnPause()}"
                 android:layout_marginEnd="@dimen/space_normal"
-                android:src="@drawable/ic_pause_black_24dp"
+                app:changePausedIcon="@{viewModel.changedToPauseIconLive}"
                 tools:ignore="ContentDescription" />
 
 
