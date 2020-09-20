@@ -60,8 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:layout_marginStart="@dimen/space_small"
-                android:text="@string/_15_10"/>
+                app:timeFromGame="@{viewModel.gameLive}"/>
 
             <ImageButton
                 android:id="@+id/deleteIb"
@@ -69,7 +68,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:onClick="@{() -> viewModel.clickOnPause()}"
-                android:layout_marginStart="@dimen/space_small"
                 android:layout_marginEnd="@dimen/space_normal"
                 android:src="@drawable/ic_pause_black_24dp"
                 tools:ignore="ContentDescription" />

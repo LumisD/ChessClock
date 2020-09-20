@@ -6,6 +6,8 @@ interface GameRepository {
 
     suspend fun getGameCount(): Int
 
+    suspend fun getFirstGame(): Game?
+
     suspend fun getGameById(gameId: Int): Game?
 
     suspend fun insertGame(game: Game)

@@ -2,11 +2,31 @@ package com.lumisdinos.chessclock.data
 
 object Constants {
 
+    const val GAME = "game"
+
+    const val _15_10 = "15, 0, 10"//15m +10s
+    const val _5_5 = "5, 0, 5"    //5m +5s
+    const val _3_2 = "3, 0, 2"    //3m +2s
+    const val _2_1 = "2, 0, 1"    //2m +1s
+    const val _1_1 = "1, 0, 1"    //1m +1s
+    const val _45_45 = "45, 0, 45"//45m +45s
+
+    const val _60 = "60, 0, 0"    //60m
+    const val _30 = "30, 0, 0"    //30m
+    const val _20 = "20, 0, 0"    //20m
+    const val _10 = "10, 0, 0"    //10m
+    const val _5 = "5, 0, 0"      //5m
+    const val _3= "3, 0, 0"       //3m
+    const val _1 = "1, 0, 0"      //1m
+
     const val STRING = "String"
     const val INTEGER = "Integer"
     const val FLOAT = "Float"
     const val DATE = "Date"
     val NULL = "NULL"
+
+
+
 
     val COLUMN_TYPES = listOf<String>(STRING, INTEGER, FLOAT, DATE)
     val MONTHS = listOf<String>("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -16,7 +36,7 @@ object Constants {
         "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31")
     val NONE_ALL_DAYS = listOf<String>("NONE", "ALL")
 
-    const val GAME = "game"
+
 
     const val DISTINCT_COLUMN_NO_LIMIT = -1//-1 - no limit
 

@@ -12,7 +12,10 @@ interface DaoDB {
     fun getGameCount(): Int
 
     @Query("SELECT * FROM game WHERE id = :gameId")
-    fun getGameById(gameId: Int): Game
+    fun getGameById(gameId: Int): Game?
+
+    @Query("SELECT * FROM game LIMIT 1")
+    fun getFirstGame(): Game?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertGame(row20: Game)

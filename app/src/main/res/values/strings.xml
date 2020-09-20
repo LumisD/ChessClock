@@ -26,9 +26,23 @@
     <string name="home_second">Home Second</string>
     <string name="drag">drag</string>
     <string name="_15_10">15m +10c</string>
+    <string name="_5_5">5m +5c</string>
+    <string name="_3_2">3m +2c</string>
+    <string name="_2_1">2m +1c</string>
+    <string name="_1_1">1m +1c</string>
+    <string name="_45_45">45m +45c</string>
+
+    <string name="_60">60m</string>
     <string name="_30">30m</string>
+    <string name="_20">20m</string>
+    <string name="_10">10m</string>
+    <string name="_5">5m</string>
+    <string name="_3">3m</string>
+    <string name="_1">1m</string>
+
     <string name="custom_time">Custom Time</string>
     <string name="set_min_sec_inc">Set minutes, seconds and, if necessary, an increment (seconds)</string>
+    <string name="time_control_not_set">"Time control is not set"</string>
 
     <string name="min">min</string>
     <string name="sec">sec</string>

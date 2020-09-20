@@ -12,6 +12,10 @@ class GameRepositoryImpl @Inject constructor(
         return daoDB.getGameCount()
     }
 
+    override suspend fun getFirstGame(): Game?{
+        return daoDB.getFirstGame()
+    }
+
     override suspend fun getGameById(gameId: Int): Game? {
         return daoDB.getGameById(gameId)
     }
