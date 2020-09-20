@@ -1,5 +1,8 @@
 package com.lumisdinos.chessclock.common.utils
 
+import com.lumisdinos.chessclock.data.AppConfig.longDelay
+import com.lumisdinos.chessclock.data.AppConfig.previousClickTimeMillis
+import com.lumisdinos.chessclock.data.AppConfig.shortDelay
 import timber.log.Timber
 import java.lang.Exception
 import java.lang.NumberFormatException
@@ -49,5 +52,26 @@ fun floatToStr(float: Float?, precision: Int, showPointIfZero: Boolean): String 
     } catch (e: Exception) {
         Timber.d("qwer floatToStr Exception: %s, float: |%s|", e.message, float)
         "0"
+    }
+}
+
+
+fun isClickedSingle(): Boolean {
+    return isAlreadyClick(longDelay)
+}
+
+
+fun isClickedShort(): Boolean {
+    return isAlreadyClick(shortDelay)
+}
+
+
+fun isAlreadyClick(time: Long): Boolean {
+    val currentTimeMillis = System.currentTimeMillis()
+    if (currentTimeMillis >= previousClickTimeMillis + time) {
+        previousClickTimeMillis = currentTimeMillis
+        return false
+    } else {
+        return true
     }
 }

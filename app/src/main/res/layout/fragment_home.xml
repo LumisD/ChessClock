@@ -17,19 +17,26 @@
         tools:context=".ui.home.HomeFragment">
 
         <View
-            android:id="@+id/topButtonView"
+            android:id="@+id/blackButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/female_icon_color"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            android:onClick="@{() -> viewModel.clickOnTopButtonView()}"
-            app:layout_constraintBottom_toTopOf="@+id/centralPanelLLayout"
+            android:onClick="@{() -> viewModel.clickOnBlackButtonView()}"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_weight="6" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.45"
+            android:orientation="horizontal"/>
 
 
         <LinearLayout
@@ -38,11 +45,10 @@
             android:layout_height="0dp"
             android:orientation="horizontal"
             android:background="@color/colorGray"
-            app:layout_constraintBottom_toTopOf="@+id/bottomButtonView"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineDown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topButtonView"
-            app:layout_constraintVertical_weight="1" >
+            app:layout_constraintTop_toBottomOf="@+id/guidelineUp">
 
             <ImageButton
                 android:id="@+id/showMenuIv"
@@ -60,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                app:timeFromGame="@{viewModel.gameLive}"/>
+                app:timeControlFromGame="@{viewModel.timeControlLive}"/>
 
             <ImageButton
                 android:id="@+id/deleteIb"
@@ -76,20 +82,27 @@
         </LinearLayout>
 
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.55"
+            android:orientation="horizontal"/>
+
+
         <View
-            android:id="@+id/bottomButtonView"
+            android:id="@+id/whiteButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/male_icon_color"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            android:onClick="@{() -> viewModel.clickOnBottomButtonView()}"
+            android:onClick="@{() -> viewModel.clickOnWhiteButtonView()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/centralPanelLLayout"
-            app:layout_constraintVertical_weight="6" />
+            app:layout_constraintTop_toBottomOf="@+id/guidelineDown"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -19,6 +19,8 @@ object Constants {
     const val _3= "3, 0, 0"       //3m
     const val _1 = "1, 0, 0"      //1m
 
+    const val _10secTest = "0, 10, 0"      //10sec - test
+
     const val STRING = "String"
     const val INTEGER = "Integer"
     const val FLOAT = "Float"

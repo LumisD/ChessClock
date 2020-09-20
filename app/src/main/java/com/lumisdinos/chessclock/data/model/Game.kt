@@ -12,7 +12,10 @@ data class Game constructor(
     @ColumnInfo(name = "min") var min: Int = 0,
     @ColumnInfo(name = "sec") var sec: Int = 0,
     @ColumnInfo(name = "inc") var inc: Int = 0,
-    @ColumnInfo(name = "is_first") var isFirst: Boolean = true,
-    @ColumnInfo(name = "first_rest") var firstRest: Long = 0L,
-    @ColumnInfo(name = "second_rest") var secondRest: Long = 0L
+    @ColumnInfo(name = "white_rest") var whiteRest: Long = 0L,
+    @ColumnInfo(name = "black_rest") var blackRest: Long = 0L,
+
+    @ColumnInfo(name = "is_white_first") var isWhiteFirst: Boolean = true,
+    @ColumnInfo(name = "is_wh_moving") var isWhMoving: Boolean = true,
+    @ColumnInfo(name = "is_paused") var isPaused: Boolean = false
 )

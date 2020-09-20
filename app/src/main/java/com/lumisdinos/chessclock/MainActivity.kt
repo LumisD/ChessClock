@@ -17,6 +17,7 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import com.lumisdinos.chessclock.data.Constants._1
 import com.lumisdinos.chessclock.data.Constants._10
+import com.lumisdinos.chessclock.data.Constants._10secTest
 import com.lumisdinos.chessclock.data.Constants._15_10
 import com.lumisdinos.chessclock.data.Constants._1_1
 import com.lumisdinos.chessclock.data.Constants._20
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity(), DialogListener {
     private lateinit var time_5minMenuItem: MenuItem
     private lateinit var time_3minMenuItem: MenuItem
     private lateinit var time_1minMenuItem: MenuItem
+    private lateinit var time_10secTest: MenuItem
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,6 +119,8 @@ class MainActivity : AppCompatActivity(), DialogListener {
         time_3minMenuItem = navigationView.menu.findItem(R.id.t_3)
         time_1minMenuItem = navigationView.menu.findItem(R.id.t_1)
 
+        time_10secTest = navigationView.menu.findItem(R.id.t_10secTest)
+
         customTimeMenuItem.setOnMenuItemClickListener {
             Timber.d("qwer setTimeMenuItem tOnMenuItemClick")
             drawerLayout.close()
@@ -132,6 +136,16 @@ class MainActivity : AppCompatActivity(), DialogListener {
             ).show()
             true
         }
+
+
+        time_10secTest.setOnMenuItemClickListener {
+            Timber.d("qwer time_10secTest OnMenuItemClick")
+            drawerLayout.close()
+            refreshSomeFragment(navController.currentDestination, _10secTest)
+            true
+        }
+
+
 
         time_15_10MenuItem.setOnMenuItemClickListener {
             Timber.d("qwer time15_10MenuItem tOnMenuItemClick")
@@ -228,7 +242,7 @@ class MainActivity : AppCompatActivity(), DialogListener {
                 //refresh list row20
                 val homeFragment = getCurrentFragment()
                 if (homeFragment != null && homeFragment is HomeFragment) {
-                    homeFragment.setTimeControl(time)
+                    homeFragment.setChosenTimeControl(time)
                 }
             }
         } catch (e: Exception) {

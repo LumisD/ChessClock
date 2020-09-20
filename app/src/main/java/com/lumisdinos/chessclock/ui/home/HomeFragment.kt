@@ -10,12 +10,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.lumisdinos.chessclock.R
+import com.lumisdinos.chessclock.common.Event
+import com.lumisdinos.chessclock.common.utils.isClickedSingle
 import com.lumisdinos.chessclock.databinding.FragmentHomeBinding
+import com.lumisdinos.chessclock.dialogs.DialogListener
+import com.lumisdinos.chessclock.dialogs.getAlertDialog
 import dagger.android.support.DaggerFragment
 import timber.log.Timber
 import javax.inject.Inject
 
-class HomeFragment : DaggerFragment() {
+class HomeFragment : DaggerFragment(), DialogListener {
+
+    private val ACTION_TIME_EXPIRED = "110"
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -41,17 +48,50 @@ class HomeFragment : DaggerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-//        viewModel.text.observe(viewLifecycleOwner, Observer {
-//            //textView.text = it
-//        })
+        viewModel.timeExpired.observe(viewLifecycleOwner, Observer {
+            timeExpired(it)
+        })
 
         viewModel.getGame()
     }
 
 
-    fun setTimeControl(timeControl: String) {
-        //viewDataBinding.timeTv.text = time
-        viewModel.setTimeControl(timeControl)
+    fun setChosenTimeControl(timeControl: String) {
+        viewModel.setChosenTimeControl(timeControl)
+    }
+
+
+    private fun timeExpired(event: Event<String>) {
+        if (isClickedSingle()) return
+        event.getContentIfNotHandled()?.let {
+            Timber.d("qwer timeExpired")
+            getAlertDialog(
+                requireContext(),
+                ACTION_TIME_EXPIRED,
+                this,
+                getString(R.string.time_is_over),//title
+                String.format(getString(R.string._lost_on_time), it),//message
+                getString(R.string.ok)
+            ).show()
+
+        }
+    }
+
+
+    //  -- DialogListener --
+
+    override fun onPositiveDialogClick(result: List<String>) {
+        Timber.d("qwer onPositiveDialogClick action: %s", result[0])
+        when(result[0]) {
+            ACTION_TIME_EXPIRED -> {}
+            else -> {}
+        }
+    }
+
+    override fun onNegativeDialogClick(result: List<String>) {
+    }
+
+    override fun onNeutralDialogClick(result: List<String>) {
     }
 
 }

@@ -5,6 +5,15 @@
 
     <group android:checkableBehavior="single">
 
+
+
+        <item
+            android:id="@+id/t_10secTest"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/custom_time" />
+
+
+
         <item
             android:id="@+id/customTime"
             android:icon="@drawable/ic_menu_camera"

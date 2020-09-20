@@ -1,21 +1,14 @@
 package com.lumisdinos.chessclock.common
 
-import android.text.InputFilter
-import android.text.InputType
 import android.view.View
-import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import com.lumisdinos.chessclock.R
-import com.lumisdinos.chessclock.common.utils.InputFilterMinMax
-import com.lumisdinos.chessclock.common.utils.convertLongToDateString
+import com.lumisdinos.chessclock.common.utils.*
 import com.lumisdinos.chessclock.data.AppConfig
 import com.lumisdinos.chessclock.data.Constants.DATE
-import com.lumisdinos.chessclock.common.utils.floatToStr
-import com.lumisdinos.chessclock.common.utils.intToStr
 import com.lumisdinos.chessclock.data.Constants.PERCENT_CHANGE_MONTH
-import com.lumisdinos.chessclock.data.model.Game
 import com.lumisdinos.tabletransform.common.extension.toNotNull
 import timber.log.Timber
 import java.lang.StringBuilder
@@ -24,43 +17,40 @@ import java.lang.StringBuilder
 object BindingAdapters {
 
     @JvmStatic
-    @BindingAdapter("timeFromGame")
-    fun convertTimeFromGame(textView: TextView, gameLive: LiveData<Game?>) {
-        Timber.d("qwer timeFromGame")
-        val game = gameLive?.value
-        if (game == null) {
+    @BindingAdapter("timeControlFromGame")
+    fun convertTimeControlFromGame(textView: TextView, timeControlLive: LiveData<String>) {
+        //Timber.d("qwer timeFromGame")
+        val timeControl = timeControlLive?.value
+        if (timeControl.isNullOrEmpty()) {
             textView.text = textView.context.getString(R.string.time_control_not_set)
             return
         }
 
-        if (game.min == 0 && game.sec == 0 && game.inc == 0) {
+        val times = timeControl.split(",").map { it.trim() }
+        val min = strToInt(times[0])
+        val sec = strToInt(times[1])
+        val inc = strToInt(times[2])
+
+        if (min == 0 && sec == 0 && inc == 0) {
             textView.text = textView.context.getString(R.string.time_control_not_set)
             return
         }
-        Timber.d("qwer timeFromGame game: %s", game)
+        //Timber.d("qwer timeFromGame game: %s", game)
         val builder = StringBuilder()
-        builder.append(game.min)
-        if (game.sec != 0) {
-            builder.append(".").append(game.sec)
+        builder.append(min)
+        if (sec != 0) {
+            builder.append(".")
+            if (sec < 10) {
+                builder.append("0")
+            }
+            builder.append(sec)
         }
-        if (game.inc != 0) {
-            builder.append(" +").append(game.inc)
+        if (inc != 0) {
+            builder.append(" +").append(inc)
         }
 
         textView.text = builder.toString()
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @JvmStatic
@@ -108,7 +98,6 @@ object BindingAdapters {
             view.visibility = View.GONE
         }
     }
-
 
 
     @JvmStatic

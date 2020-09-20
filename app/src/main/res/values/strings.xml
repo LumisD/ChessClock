@@ -40,9 +40,12 @@
     <string name="_3">3m</string>
     <string name="_1">1m</string>
 
+    <!-- Dialogs -->
     <string name="custom_time">Custom Time</string>
     <string name="set_min_sec_inc">Set minutes, seconds and, if necessary, an increment (seconds)</string>
     <string name="time_control_not_set">"Time control is not set"</string>
+    <string name="time_is_over">Time is over</string>
+    <string name="_lost_on_time">%s lost on time!</string>
 
     <string name="min">min</string>
     <string name="sec">sec</string>
