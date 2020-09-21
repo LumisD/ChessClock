@@ -3,8 +3,8 @@ package com.lumisdinos.chessclock.data
 object AppConfig {
 
     var min = 0//15
-    var sec = 15//0
-    var inc = 0//10
+    var sec = 10//0
+    var inc = 3//10
 
 
     var previousClickTimeMillis = 0L

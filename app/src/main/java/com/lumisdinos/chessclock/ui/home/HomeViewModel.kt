@@ -84,31 +84,27 @@ class HomeViewModel @Inject constructor(
     fun clickOnBlackButtonView() {
         Timber.d("qwer clickOnBlackButtonView")
         CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.IO) {
-                if (game == null) return@withContext
-                if (startFirstMove(false)) {
-                    game?.let { it.isFirstPlayerMoving = false }//handleNewMove inverses it
-                }
-            }
+            var isTheFirstMove = false
+            if (game == null) return@launch
+            isTheFirstMove = startFirstMove(false)
+            if (isTheFirstMove) return@launch
 
             game?.let {
 
                 //define which clock is going
                 var blackIsMoving = false
-                if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
+                if (it.isWhiteFirst && !it.isFirstPlayerMoving) {//white was first, but now not his move -> so, black is moving
                     blackIsMoving = true
-                } else if (it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                } else if (!it.isWhiteFirst && it.isFirstPlayerMoving) {//white was not first, but now move of first player -> so, black is moving
                     blackIsMoving = true
                 }
 
-                //if currently black clock is moving - only proceed if it's paused and black side pressed his button again
+                //if currently black clock is moving - only proceed if it's paused by black AND black side pressed his button again
                 if (blackIsMoving) {
                     //player pressed again his button
                     if (it.isPaused) {
-                        if (blackIsMoving) {
-                            //only proceed if before pause it was black moving
-                            clickOnPause()
-                        }
+                        //only proceed if before pause it was black moving
+                        clickOnPause()
                     }
                     return@launch
                 } else {
@@ -117,7 +113,7 @@ class HomeViewModel @Inject constructor(
                         //it was paused when white player's clock was going
                         return@launch
                     }
-                    handleNewMove()
+                    handleNewMove(true)
                 }
             }
         }
@@ -127,24 +123,22 @@ class HomeViewModel @Inject constructor(
     fun clickOnWhiteButtonView() {
         Timber.d("qwer clickOnWhiteButtonView")
         CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.IO) {
-                if (game == null) return@withContext
-                if (startFirstMove(true)) {
-                    game?.let { it.isFirstPlayerMoving = false }//handleNewMove inverses it
-                }
-            }
+            var isTheFirstMove = false
+            if (game == null) return@launch
+            isTheFirstMove = startFirstMove(true)
+            if (isTheFirstMove) return@launch
 
             game?.let {
 
                 //define which clock is going
                 var whiteIsMoving = false
-                if (it.isFirstPlayerMoving && it.isWhiteFirst) {
+                if (it.isWhiteFirst && it.isFirstPlayerMoving) {//white was first, AND now move of first player -> so, white is moving
                     whiteIsMoving = true
-                } else if (!it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                } else if (!it.isWhiteFirst && !it.isFirstPlayerMoving) {//white was not first, AND now move of not first player -> so, black is moving
                     whiteIsMoving = true
                 }
 
-                //if currently white clock is moving - only proceed if it's paused and white side pressed his button again
+                //if currently white clock is moving - only proceed if it's paused by white AND white side pressed his button again
                 if (whiteIsMoving) {
                     //player pressed again his button
                     if (it.isPaused) {
@@ -158,7 +152,7 @@ class HomeViewModel @Inject constructor(
                         //it was paused when black player's clock was going
                         return@launch
                     }
-                    handleNewMove()
+                    handleNewMove(false)
                 }
             }
         }
@@ -200,9 +194,20 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    private fun handleNewMove() {
-        Timber.d("qwer handleNewMove")
+    private fun handleNewMove(isWhiteMovingCurrently: Boolean) {
+        Timber.d("qwer handleNewMove isWhiteMovingCurrently: %s", isWhiteMovingCurrently)
         game?.let {
+            //add increment
+            if (it.inc > 0) {
+                if (isWhiteMovingCurrently) {
+                    Timber.d("qwer handleNewMove whiteRest += it.inc * 1000")
+                    it.whiteRest += it.inc * 1000
+                } else {
+                    Timber.d("qwer handleNewMove blackRest += it.inc * 1000")
+                    it.blackRest += it.inc * 1000
+                }
+            }
+
             it.systemMillis = System.currentTimeMillis()
             it.isFirstPlayerMoving = !it.isFirstPlayerMoving
             Timber.d("qwer handleNewMove isFirstPlayerMoving: %s", it.isFirstPlayerMoving)
@@ -235,7 +240,7 @@ class HomeViewModel @Inject constructor(
 
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                Timber.d("qwer startTimer onTick")
+                //Timber.d("qwer startTimer onTick")
 
                 game?.let {
                     val restTime: Long
@@ -250,20 +255,14 @@ class HomeViewModel @Inject constructor(
                     //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
-                        if (isWhiteMovingCurrently) {
-                            restTimeWhiteLive.postValue(it.whiteRest)
-                        } else {
-                            restTimeBlackLive.postValue(it.blackRest)
-                        }
+                        restTimeWhiteLive.postValue(it.whiteRest)
+                        restTimeBlackLive.postValue(it.blackRest)
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
                             Timber.d("qwer startTimer refresh only every sec ticks: %s", ticks)
-                            if (isWhiteMovingCurrently) {
-                                restTimeWhiteLive.postValue(it.whiteRest)
-                            } else {
-                                restTimeBlackLive.postValue(it.blackRest)
-                            }
+                            restTimeWhiteLive.postValue(it.whiteRest)
+                            restTimeBlackLive.postValue(it.blackRest)
                         }
                     }
 
@@ -312,7 +311,13 @@ class HomeViewModel @Inject constructor(
                 it.systemMillis = System.currentTimeMillis()
                 it.whiteRest = (it.min * 60 + it.sec) * 1000L
                 it.blackRest = it.whiteRest
+                it.isFirstPlayerMoving = true
                 it.isWhiteFirst = isWhiteFirst
+
+                timer?.let { it.cancel() }
+                timer = null
+                startTimer()
+
                 return true
             }
         }
