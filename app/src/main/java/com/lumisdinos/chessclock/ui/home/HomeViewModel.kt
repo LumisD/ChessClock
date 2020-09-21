@@ -90,8 +90,10 @@ class HomeViewModel @Inject constructor(
                     game?.let { it.isFirstPlayerMoving = false }//handleNewMove inverses it
                 }
             }
+
             game?.let {
 
+                //define which clock is going
                 var blackIsMoving = false
                 if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
                     blackIsMoving = true
@@ -99,6 +101,7 @@ class HomeViewModel @Inject constructor(
                     blackIsMoving = true
                 }
 
+                //if currently black clock is moving - only proceed if it's paused and black side pressed his button again
                 if (blackIsMoving) {
                     //player pressed again his button
                     if (it.isPaused) {
@@ -109,6 +112,7 @@ class HomeViewModel @Inject constructor(
                     }
                     return@launch
                 } else {
+                    //if currently black clock is NOT moving - only proceed if it's NOT paused (by white side player)
                     if (it.isPaused) {
                         //it was paused when white player's clock was going
                         return@launch
@@ -132,6 +136,7 @@ class HomeViewModel @Inject constructor(
 
             game?.let {
 
+                //define which clock is going
                 var whiteIsMoving = false
                 if (it.isFirstPlayerMoving && it.isWhiteFirst) {
                     whiteIsMoving = true
@@ -139,6 +144,7 @@ class HomeViewModel @Inject constructor(
                     whiteIsMoving = true
                 }
 
+                //if currently white clock is moving - only proceed if it's paused and white side pressed his button again
                 if (whiteIsMoving) {
                     //player pressed again his button
                     if (it.isPaused) {
@@ -147,6 +153,7 @@ class HomeViewModel @Inject constructor(
                     }
                     return@launch
                 } else {
+                    //if currently white clock is NOT moving - only proceed if it's NOT paused (by black side player)
                     if (it.isPaused) {
                         //it was paused when black player's clock was going
                         return@launch
