@@ -214,10 +214,21 @@ class HomeViewModel @Inject constructor(
 
 
     private fun startTimer() {
-//        timer = fixedRateTimer(period = 100L) {
-//            Timber.d("qwer startTimer")
-//        }
-        val millFuture = if (game!!.isFirstPlayerMoving) game!!.whiteRest else game!!.blackRest
+        var isWhiteMovingCurrently = false
+        game?.let {
+
+            if (it.isFirstPlayerMoving && it.isWhiteFirst) {
+                isWhiteMovingCurrently = true
+            } else if (!it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                isWhiteMovingCurrently = true
+            } else if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
+                isWhiteMovingCurrently = false
+            } else if (it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                isWhiteMovingCurrently = false
+            }
+        }
+
+        val millFuture = if (isWhiteMovingCurrently) game!!.whiteRest else game!!.blackRest
         Timber.d("qwer startTimer millFuture: %s", millFuture)
 
         var ticks = 0
@@ -228,7 +239,7 @@ class HomeViewModel @Inject constructor(
 
                 game?.let {
                     val restTime: Long
-                    if (it.isFirstPlayerMoving) {
+                    if (isWhiteMovingCurrently) {
                         it.whiteRest -= 100L
                         restTime = it.whiteRest
                     } else {
@@ -239,7 +250,7 @@ class HomeViewModel @Inject constructor(
                     //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
-                        if (it.isFirstPlayerMoving) {
+                        if (isWhiteMovingCurrently) {
                             restTimeWhiteLive.postValue(it.whiteRest)
                         } else {
                             restTimeBlackLive.postValue(it.blackRest)
@@ -248,7 +259,7 @@ class HomeViewModel @Inject constructor(
                         //refresh only every sec
                         if (ticks % 10 == 0) {
                             Timber.d("qwer startTimer refresh only every sec ticks: %s", ticks)
-                            if (it.isFirstPlayerMoving) {
+                            if (isWhiteMovingCurrently) {
                                 restTimeWhiteLive.postValue(it.whiteRest)
                             } else {
                                 restTimeBlackLive.postValue(it.blackRest)
