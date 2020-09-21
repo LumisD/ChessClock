@@ -28,6 +28,8 @@ class HomeViewModel @Inject constructor(
 
     val timeControlLive = MutableLiveData<String>()
     val changedToPauseIconLive = MutableLiveData<Boolean>()
+    val restTimeWhiteLive = MutableLiveData<Long>()
+    val restTimeBlackLive = MutableLiveData<Long>()
 
     var timer: CountDownTimer? = null
 
@@ -42,9 +44,13 @@ class HomeViewModel @Inject constructor(
                     game!!.min = AppConfig.min
                     game!!.sec = AppConfig.sec
                     game!!.inc = AppConfig.inc
+                    game!!.whiteRest = (AppConfig.min * 60 + AppConfig.sec) * 1000L
+                    game!!.blackRest = game!!.whiteRest
                 }
                 game?.let {
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
+                    restTimeWhiteLive.postValue(it.whiteRest)
+                    restTimeBlackLive.postValue(it.blackRest)
                 }
             }
         }
@@ -62,7 +68,11 @@ class HomeViewModel @Inject constructor(
                     it.min = strToInt(times[0])
                     it.sec = strToInt(times[1])
                     it.inc = strToInt(times[2])
+                    it.whiteRest = (it.min * 60 + it.sec) * 1000L
+                    it.blackRest = game!!.whiteRest
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
+                    restTimeWhiteLive.postValue(it.whiteRest)
+                    restTimeBlackLive.postValue(it.blackRest)
                 }
 
             }
@@ -81,27 +91,31 @@ class HomeViewModel @Inject constructor(
                 }
             }
             game?.let {
-                if (it.isPaused) {
 
-                    var blackIsMoving = false
-                    if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
-                        blackIsMoving = true
-                    } else if (it.isFirstPlayerMoving && !it.isWhiteFirst) {
-                        blackIsMoving = true
-                    }
-
-                    if (blackIsMoving) {
-                        //only proceed if before pause it was black moving
-                        clickOnPause()
-                        return@launch
-                    }
-                } else {
-                    handleNewMove()
+                var blackIsMoving = false
+                if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
+                    blackIsMoving = true
+                } else if (it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                    blackIsMoving = true
                 }
 
+                if (blackIsMoving) {
+                    //player pressed again his button
+                    if (it.isPaused) {
+                        if (blackIsMoving) {
+                            //only proceed if before pause it was black moving
+                            clickOnPause()
+                        }
+                    }
+                    return@launch
+                } else {
+                    if (it.isPaused) {
+                        //it was paused when white player's clock was going
+                        return@launch
+                    }
+                    handleNewMove()
+                }
             }
-
-
         }
     }
 
@@ -117,27 +131,29 @@ class HomeViewModel @Inject constructor(
             }
 
             game?.let {
-                if (it.isPaused) {
 
-                    var whiteIsMoving = false
-                    if (it.isFirstPlayerMoving && it.isWhiteFirst) {
-                        whiteIsMoving = true
-                    } else if (!it.isFirstPlayerMoving && !it.isWhiteFirst) {
-                        whiteIsMoving = true
-                    }
-
-                    if (whiteIsMoving) {
-                        //only proceed if before pause it was white moving
-                        clickOnPause()
-                        return@launch
-                    }
-                } else {
-                    handleNewMove()
+                var whiteIsMoving = false
+                if (it.isFirstPlayerMoving && it.isWhiteFirst) {
+                    whiteIsMoving = true
+                } else if (!it.isFirstPlayerMoving && !it.isWhiteFirst) {
+                    whiteIsMoving = true
                 }
 
+                if (whiteIsMoving) {
+                    //player pressed again his button
+                    if (it.isPaused) {
+                        //only proceed if before pause it was white moving
+                        clickOnPause()
+                    }
+                    return@launch
+                } else {
+                    if (it.isPaused) {
+                        //it was paused when black player's clock was going
+                        return@launch
+                    }
+                    handleNewMove()
+                }
             }
-
-
         }
 
     }
@@ -197,18 +213,44 @@ class HomeViewModel @Inject constructor(
         val millFuture = if (game!!.isFirstPlayerMoving) game!!.whiteRest else game!!.blackRest
         Timber.d("qwer startTimer millFuture: %s", millFuture)
 
+        var ticks = 0
+
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 Timber.d("qwer startTimer onTick")
+
                 game?.let {
+                    val restTime: Long
                     if (it.isFirstPlayerMoving) {
                         it.whiteRest -= 100L
+                        restTime = it.whiteRest
                     } else {
                         it.blackRest -= 100L
+                        restTime = it.blackRest
                     }
+
                     //refresh
-                    timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
+                    if (restTime < 20_000) {
+                        //refresh every 100ms
+                        if (it.isFirstPlayerMoving) {
+                            restTimeWhiteLive.postValue(it.whiteRest)
+                        } else {
+                            restTimeBlackLive.postValue(it.blackRest)
+                        }
+                    } else {
+                        //refresh only every sec
+                        if (ticks % 10 == 0) {
+                            Timber.d("qwer startTimer refresh only every sec ticks: %s", ticks)
+                            if (it.isFirstPlayerMoving) {
+                                restTimeWhiteLive.postValue(it.whiteRest)
+                            } else {
+                                restTimeBlackLive.postValue(it.blackRest)
+                            }
+                        }
+                    }
+
                 }
+                ticks++
 
             }
 
@@ -231,6 +273,8 @@ class HomeViewModel @Inject constructor(
                     //set to 0 rest time
                     if (it.isFirstPlayerMoving) it.whiteRest = 0L else it.blackRest = 0L
                     //refresh
+                    restTimeWhiteLive.postValue(it.whiteRest)
+                    restTimeBlackLive.postValue(it.blackRest)
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                 }
 

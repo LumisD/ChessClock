@@ -54,10 +54,9 @@
     <dimen name="dialog_tips_text_size">15sp</dimen>
     <dimen name="table_cell_text_size">13sp</dimen>
     <dimen name="table_cell_small_text_size">12sp</dimen>
-    <!--    table_cell_width_step is used for up/down cell width-->
     <dimen name="table_cell_font_step">1sp</dimen>
     <dimen name="button_text_size">14sp</dimen>
-    <dimen name="dialog_title_text_size">18sp</dimen>
+    <dimen name="clock_text_size">22sp</dimen>
 
     <!--    List item heights-->
     <dimen name="list_item_smaller_4_height">35dp</dimen>

@@ -1,18 +1,27 @@
 package com.lumisdinos.chessclock.common
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import com.lumisdinos.chessclock.R
-import com.lumisdinos.chessclock.common.utils.*
+import com.lumisdinos.chessclock.common.utils.convertLongToDateString
+import com.lumisdinos.chessclock.common.utils.floatToStr
+import com.lumisdinos.chessclock.common.utils.intToStr
+import com.lumisdinos.chessclock.common.utils.strToInt
 import com.lumisdinos.chessclock.data.AppConfig
+import com.lumisdinos.chessclock.data.Constants.CLOCK_PLAYER_TIME_FORMAT
+import com.lumisdinos.chessclock.data.Constants.CLOCK_PLAYER_TIME_FORMAT_DEC
+import com.lumisdinos.chessclock.data.Constants.CLOCK_PLAYER_TIME_FORMAT_LESS_10M
 import com.lumisdinos.chessclock.data.Constants.DATE
 import com.lumisdinos.chessclock.data.Constants.PERCENT_CHANGE_MONTH
 import com.lumisdinos.tabletransform.common.extension.toNotNull
 import timber.log.Timber
-import java.lang.StringBuilder
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 object BindingAdapters {
@@ -65,6 +74,31 @@ object BindingAdapters {
            Timber.d("qwer changePausedIcon if NOT changedToPause)")
            imageButton.setImageResource(R.drawable.ic_play_arrow_black_24dp)
        }
+    }
+
+
+    @JvmStatic
+    @BindingAdapter("restClockTime")
+    @SuppressLint("SimpleDateFormat")
+    fun convertRestClockTime(textView: TextView, restTimeLive: LiveData<Long>) {
+        val restTime = restTimeLive.value ?: 0L
+        if (restTime == 0L) {
+            textView.text = "0:00.0"
+            return
+        }
+
+        //Timber.d("qwer restClockTime restTime: %s", restTime)
+        val str: String
+
+        if (restTime < 20_000) {
+            str =  SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_DEC).format(Date(restTime))//m:ss.S
+        } else if (restTime < 600_000) {
+            str =  SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_LESS_10M).format(Date(restTime))//m:ss
+        } else {
+            str =  SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT).format(Date(restTime))//mm:ss
+        }
+
+        textView.text = str
     }
 
 
@@ -182,5 +216,81 @@ object BindingAdapters {
             textView.setTextColor(context.resources.getColor(R.color.green_text))
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @JvmStatic
+//    @BindingAdapter("restClockTime")
+//    fun convertRestClockTime(textView: TextView, restTimeLive: LiveData<Long>) {
+//        val restTime = restTimeLive.value ?: 0L
+//        if (restTime == 0L) {
+//            textView.text = "0.0"
+//            return
+//        }
+//
+////        val decSec = restTime % 100
+////        val sec = restTime / 1000
+////        val min = restTime / 1000 / 60
+////        val hours = restTime / 1000 / 60 / 60
+//
+//        //900 000, hours: 0, min: 15, sec: 900
+//
+//        val hours = restTime / 1000 / 60 / 60
+//        val min = restTime / 1000 / 60
+//        val sec = restTime / 1000
+//
+//        val str = String.format("%02d min, %02d sec",
+//            TimeUnit.MILLISECONDS.toMinutes(restTime),
+//            TimeUnit.MILLISECONDS.toSeconds(restTime) -
+//                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(restTime))
+//        )
+//        Timber.d("qwer restClockTime str: %s", str)
+//
+//        val time: Long = 1536259
+//        val str2 =  SimpleDateFormat("mm:ss.S").format(Date(time))
+//        Timber.d("qwer restClockTime str2: %s", str2)
+//
+//
+//        val builder = StringBuilder()
+//        if (hours > 0) {
+//            builder.append(hours).append("h:")
+//            if (min > 0) {
+//                builder.append(min).append(":")
+//            } else {
+//                builder.append("00:")
+//            }
+//        } else {
+//            //no hours
+//            if (min > 0) {
+//                builder.append(min).append(":")
+//            } else {
+//                builder.append("0:")
+//            }
+//        }
+//
+//        builder.append(sec)
+//
+//        //show decimal if rest only less than 20 sec
+//        if (hours == 0L && min == 0L && sec < 20) {
+//            val decSec = restTime % 100
+//            builder.append(".").append(decSec)
+//            Timber.d("qwer restClockTime decSec: %s", decSec)
+//        }
+//
+//        Timber.d("qwer restClockTime restTime: %s, hours: %s, min: %s, sec: %s", restTime, hours, min, sec)
+//        textView.text = builder.toString()
+//    }
+
 
 }

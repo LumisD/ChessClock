@@ -16,19 +16,36 @@
         android:layout_height="match_parent"
         tools:context=".ui.home.HomeFragment">
 
-        <View
+        <ImageView
             android:id="@+id/blackButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:padding="@dimen/space_large"
             android:background="@color/female_icon_color"
             android:clickable="true"
             android:focusable="true"
+            app:srcCompat="@drawable/ic_camera_white_100dp"
             android:foreground="@drawable/ripple"
             android:onClick="@{() -> viewModel.clickOnBlackButtonView()}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/blackTimeTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/clock_text_size"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            app:restClockTime="@{viewModel.restTimeBlackLive}"
+            app:layout_constraintTop_toTopOf="@+id/blackButtonView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:rotation="180"
+            android:layout_marginTop="@dimen/space_small"/>
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -90,19 +107,36 @@
             android:orientation="horizontal"/>
 
 
-        <View
+        <ImageView
             android:id="@+id/whiteButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:padding="@dimen/space_large"
             android:background="@color/male_icon_color"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
+            app:srcCompat="@drawable/ic_camera_white_100dp"
             android:onClick="@{() -> viewModel.clickOnWhiteButtonView()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineDown"/>
+            app:layout_constraintTop_toBottomOf="@+id/guidelineDown"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/whiteTimeTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/clock_text_size"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            app:restClockTime="@{viewModel.restTimeWhiteLive}"
+            app:layout_constraintBottom_toBottomOf="@+id/whiteButtonView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="@dimen/space_small"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

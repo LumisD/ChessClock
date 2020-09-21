@@ -128,6 +128,9 @@ object Constants {
     const val DELITO_POBLACION_DELITO = "POBLACION DELITO"
     const val DELITO_COMUNA_DELITO = "COMUNA DELITO"
 
+    val CLOCK_PLAYER_TIME_FORMAT = "mm:ss"
+    val CLOCK_PLAYER_TIME_FORMAT_LESS_10M = "m:ss"
+    val CLOCK_PLAYER_TIME_FORMAT_DEC = "m:ss.S"
     //val SQLITE_DATE_FORMAT = "YYYY-MM-DD HH:MM:SS.SSS" - suggested format but it doesn't work correct, so I use below one
     val SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
     val SHORT_SQLITE_DATE_FORMAT = "yyyy-MM-dd"
