@@ -280,7 +280,6 @@ class HomeViewModel @Inject constructor(
                 Timber.d("qwer clickOnPause if NOT it.isPaused)")
                 //pause time
                 timer?.let {
-                    Timber.d("qwer clickOnPause timer.cancell")
                     it.cancel()
                 }
                 timer = null
@@ -325,13 +324,14 @@ class HomeViewModel @Inject constructor(
             blackButtonBGLive.postValue(3)//black is waiting
         }
 
-        timer?.let { it.cancel() }
-        timer = null
         startTimer()
     }
 
 
     private fun startTimer() {
+        timer?.let { it.cancel() }
+        timer = null
+
         var isWhiteMovingCurrently = false
         game?.let {
 
@@ -414,7 +414,6 @@ class HomeViewModel @Inject constructor(
             }
         }
         timer!!.start()
-        //timer!!.cancel()
     }
 
 
@@ -438,8 +437,6 @@ class HomeViewModel @Inject constructor(
                     whiteButtonBGLive.postValue(3)//white is waiting
                 }
 
-                timer?.let { it.cancel() }
-                timer = null
                 startTimer()
 
                 return true
