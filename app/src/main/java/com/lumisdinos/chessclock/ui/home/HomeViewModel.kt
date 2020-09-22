@@ -287,15 +287,18 @@ class HomeViewModel @Inject constructor(
 
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                //Timber.d("qwer startTimer onTick")
 
                 game?.let {
                     val restTime: Long
                     if (isWhiteMovingCurrently) {
                         it.whiteRest -= 100L
+                        if (it.whiteRest < 0L) it.whiteRest = 0L
+                        //Timber.d("qwer onTick whiteRest: %s", it.whiteRest)
                         restTime = it.whiteRest
                     } else {
                         it.blackRest -= 100L
+                        if (it.blackRest < 0L) it.blackRest = 0L
+                        //Timber.d("qwer onTick blackRest: %s", it.blackRest)
                         restTime = it.blackRest
                     }
 
@@ -307,7 +310,7 @@ class HomeViewModel @Inject constructor(
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
-                            Timber.d("qwer startTimer refresh only every sec ticks: %s", ticks)
+                            //Timber.d("qwer startTimer refresh only every sec ticks: %s", ticks)
                             restTimeWhiteLive.postValue(it.whiteRest)
                             restTimeBlackLive.postValue(it.blackRest)
                         }
@@ -325,21 +328,20 @@ class HomeViewModel @Inject constructor(
                 game?.let {
                     //define which side expired: who started
                     Timber.d(
-                        "qwer startTimer onFinish isFirstPlayerMoving: %s, isWhiteFirst: %s",
-                        it.isFirstPlayerMoving,
-                        it.isWhiteFirst
+                        "qwer startTimer onFinish whiteRest: %s, blackRest: %s",
+                        it.whiteRest,
+                        it.blackRest
                     )
                     if (it.isFirstPlayerMoving) {
                         sideWhichExpired = "white"
                     } else if (!it.isFirstPlayerMoving) {
                         sideWhichExpired = "black"
                     }
-                    //set to 0 rest time
-                    if (it.isFirstPlayerMoving) it.whiteRest = 0L else it.blackRest = 0L
+//                    //set to 0 rest time
+//                    if (it.isFirstPlayerMoving) it.whiteRest = 0L else it.blackRest = 0L
                     //refresh
                     restTimeWhiteLive.postValue(it.whiteRest)
                     restTimeBlackLive.postValue(it.blackRest)
-                    timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                 }
 
                 _timeExpired.postValue(Event(sideWhichExpired))
