@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.lumisdinos.chessclock.ui.home.HomeViewModel" />
@@ -20,12 +21,12 @@
             android:id="@+id/blackButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:tag="black"
-            android:padding="@dimen/space_xxlarge"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
             android:onClick="@{() -> viewModel.clickOnBlackButtonView()}"
+            android:padding="@dimen/space_xxlarge"
+            android:tag="black"
             app:blackButtonsBG="@{viewModel.blackButtonBGLive}"
             app:isWhiteFirst="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
@@ -36,27 +37,27 @@
 
         <TextView
             android:id="@+id/blackTimeTv"
-            android:tag="black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/clock_text_size"
+            android:layout_marginTop="@dimen/space_small"
+            android:rotation="180"
+            android:tag="black"
             android:textColor="@color/colorWhite"
+            android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:restClockTime="@{viewModel.restTimeBlackLive}"
             app:buttonTextColor="@{viewModel.isWhiteFirstLive}"
-            app:layout_constraintTop_toTopOf="@+id/blackButtonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:rotation="180"
-            android:layout_marginTop="@dimen/space_small"/>
+            app:layout_constraintTop_toTopOf="@+id/blackButtonView"
+            app:restClockTime="@{viewModel.restTimeBlackLive}" />
 
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintGuide_percent="0.45"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.45" />
 
 
         <LinearLayout
@@ -64,7 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:background="@drawable/border_gray_button"
             app:layout_constraintBottom_toTopOf="@+id/guidelineDown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,9 +74,10 @@
                 android:id="@+id/showMenuIv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@drawable/ripple"
-                android:onClick="@{() -> viewModel.clickShowMenu()}"
+                android:background="@drawable/border_green_no_bg"
                 android:contentDescription="@string/drag"
+                android:foreground="@drawable/ripple"
+                android:onClick="@{() -> viewModel.clickShowMenu()}"
                 android:paddingStart="@dimen/space_normal"
                 android:paddingEnd="@dimen/space_normal"
                 android:src="@drawable/ic_chevron_right_black_24dp" />
@@ -85,16 +86,22 @@
                 android:id="@+id/timeTv"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:paddingStart="@dimen/space_small"
+                android:paddingEnd="@dimen/space_small"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/time_control_text_size"
+                android:textStyle="bold"
+                android:background="@drawable/border_green_no_bg"
                 android:gravity="center_vertical"
-                app:timeControlFromGame="@{viewModel.timeControlLive}"/>
+                app:timeControlFromGame="@{viewModel.timeControlLive}" />
 
             <ImageButton
                 android:id="@+id/deleteIb"
-                android:background="@drawable/ripple"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/border_green_no_bg"
+                android:foreground="@drawable/ripple"
                 android:onClick="@{() -> viewModel.clickOnPause()}"
-                android:layout_marginEnd="@dimen/space_normal"
                 app:changePausedIcon="@{viewModel.changedToPauseIconLive}"
                 tools:ignore="ContentDescription" />
 
@@ -106,42 +113,42 @@
             android:id="@+id/guidelineDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintGuide_percent="0.55"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.55" />
 
 
         <ImageView
             android:id="@+id/whiteButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:tag="white"
-            android:padding="@dimen/space_xxlarge"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
             android:onClick="@{() -> viewModel.clickOnWhiteButtonView()}"
-            app:whiteButtonsBG="@{viewModel.whiteButtonBGLive}"
+            android:padding="@dimen/space_xxlarge"
+            android:tag="white"
             app:isWhiteFirst="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guidelineDown"
+            app:whiteButtonsBG="@{viewModel.whiteButtonBGLive}"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/whiteTimeTv"
-            android:tag="white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/clock_text_size"
+            android:layout_marginBottom="@dimen/space_small"
+            android:tag="white"
             android:textColor="@color/colorBlack"
+            android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:restClockTime="@{viewModel.restTimeWhiteLive}"
             app:buttonTextColor="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toBottomOf="@+id/whiteButtonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginBottom="@dimen/space_small"/>
+            app:restClockTime="@{viewModel.restTimeWhiteLive}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
