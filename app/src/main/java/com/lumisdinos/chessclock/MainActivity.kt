@@ -229,6 +229,11 @@ class MainActivity : AppCompatActivity(), DialogListener {
     }
 
 
+    fun openDrawer() {
+        drawerLayout.open()
+    }
+
+
     @SuppressLint("RestrictedApi")
     fun refreshSomeFragment(destination: NavDestination?, time: String) {
         if (destination == null) return

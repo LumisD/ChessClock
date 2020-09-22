@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import com.lumisdinos.chessclock.MainActivity
 import com.lumisdinos.chessclock.R
 import com.lumisdinos.chessclock.common.Event
 import com.lumisdinos.chessclock.common.utils.isClickedSingle
@@ -48,9 +47,8 @@ class HomeFragment : DaggerFragment(), DialogListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        viewModel.timeExpired.observe(viewLifecycleOwner, Observer {
-            timeExpired(it)
-        })
+        viewModel.timeExpired.observe(viewLifecycleOwner, Observer { timeExpired(it) })
+        viewModel.openDrawer.observe(viewLifecycleOwner, Observer { openDrawer(it) })
     }
 
 
@@ -70,6 +68,15 @@ class HomeFragment : DaggerFragment(), DialogListener {
 
     fun setChosenTimeControl(timeControl: String) {
         viewModel.setChosenTimeControl(timeControl)
+    }
+
+
+    private fun openDrawer(event: Event<Boolean>) {
+        if (isClickedSingle()) return
+        event.getContentIfNotHandled()?.let {
+            val mainActivity = activity as MainActivity
+            mainActivity.openDrawer()
+        }
     }
 
 

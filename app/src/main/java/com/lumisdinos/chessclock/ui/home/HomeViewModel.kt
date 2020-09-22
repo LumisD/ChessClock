@@ -23,6 +23,9 @@ class HomeViewModel @Inject constructor(
     private val _timeExpired = MutableLiveData<Event<String>>()
     val timeExpired: LiveData<Event<String>> = _timeExpired
 
+    private val _openDrawer = MutableLiveData<Event<Boolean>>()
+    val openDrawer: LiveData<Event<Boolean>> = _openDrawer
+
     var game: Game? = null
 
     val timeControlLive = MutableLiveData<String>()
@@ -101,6 +104,12 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+    }
+
+
+    fun clickShowMenu() {
+        Timber.d("qwer clickShowMenu")
+        _openDrawer.postValue(Event(true))
     }
 
 
@@ -220,12 +229,6 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    fun clickShowMenu() {
-        Timber.d("qwer clickShowMenu")
-
     }
 
 
