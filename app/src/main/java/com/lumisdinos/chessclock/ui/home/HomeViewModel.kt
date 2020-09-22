@@ -26,6 +26,10 @@ class HomeViewModel @Inject constructor(
     private val _openDrawer = MutableLiveData<Event<Boolean>>()
     val openDrawer: LiveData<Event<Boolean>> = _openDrawer
 
+    private val _moveSound = MutableLiveData<Event<Boolean>>()
+    val moveSound: LiveData<Event<Boolean>> = _moveSound
+
+
     var game: Game? = null
 
     val timeControlLive = MutableLiveData<String>()
@@ -197,6 +201,8 @@ class HomeViewModel @Inject constructor(
     fun clickOnBlackButtonView() {
         Timber.d("qwer clickOnBlackButtonView")
         CoroutineScope(Dispatchers.Main).launch {
+            _moveSound.postValue(Event(true))
+
             var isTheFirstMove = false
             if (game == null) return@launch
             isTheFirstMove = startFirstMove(false)
@@ -236,6 +242,8 @@ class HomeViewModel @Inject constructor(
     fun clickOnWhiteButtonView() {
         Timber.d("qwer clickOnWhiteButtonView")
         CoroutineScope(Dispatchers.Main).launch {
+            _moveSound.postValue(Event(true))
+
             var isTheFirstMove = false
             if (game == null) return@launch
             isTheFirstMove = startFirstMove(true)

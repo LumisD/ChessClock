@@ -1,6 +1,8 @@
 package com.lumisdinos.chessclock.ui.home
 
 import android.content.SharedPreferences
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.lumisdinos.chessclock.MainActivity
 import com.lumisdinos.chessclock.R
 import com.lumisdinos.chessclock.common.Event
+import com.lumisdinos.chessclock.common.utils.isClickedShort
 import com.lumisdinos.chessclock.common.utils.isClickedSingle
 import com.lumisdinos.chessclock.databinding.FragmentHomeBinding
 import com.lumisdinos.chessclock.dialogs.DialogListener
@@ -49,6 +52,7 @@ class HomeFragment : DaggerFragment(), DialogListener {
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         viewModel.timeExpired.observe(viewLifecycleOwner, Observer { timeExpired(it) })
         viewModel.openDrawer.observe(viewLifecycleOwner, Observer { openDrawer(it) })
+        viewModel.moveSound.observe(viewLifecycleOwner, Observer { moveSound(it) })
     }
 
 
@@ -76,6 +80,20 @@ class HomeFragment : DaggerFragment(), DialogListener {
         event.getContentIfNotHandled()?.let {
             val mainActivity = activity as MainActivity
             mainActivity.openDrawer()
+        }
+    }
+
+
+    private fun moveSound(event: Event<Boolean>) {
+        if (isClickedShort()) return
+        event.getContentIfNotHandled()?.let {
+            val mp = MediaPlayer.create(context, R.raw.pawn_move)
+            mp.start()
+
+            mp.setOnCompletionListener(OnCompletionListener {
+                Timber.d("qwer mp.release")
+                mp.release()
+            })
         }
     }
 
