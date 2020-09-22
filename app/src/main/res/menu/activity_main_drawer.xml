@@ -3,24 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
 
-
-
-        <item
-            android:id="@+id/t_10secTest"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/custom_time" />
-
-
-
+    <group
+        android:id="@+id/menuCustomTime"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/customTime"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/custom_time" />
+    </group>
 
-
-
+    <group
+        android:id="@+id/menuFisherTime"
+        android:checkableBehavior="single">
 
         <item
             android:id="@+id/t_15_10"
@@ -51,10 +46,11 @@
             android:id="@+id/t_45_45"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/_45_45" />
+    </group>
 
-
-
-
+    <group
+        android:id="@+id/menuSimpleTime"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/t_60"
             android:icon="@drawable/ic_menu_camera"
@@ -89,18 +85,18 @@
             android:id="@+id/t_1"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/_1" />
-
-<!--        <item-->
-<!--            android:id="@+id/nav_home"-->
-<!--            android:icon="@drawable/ic_menu_camera"-->
-<!--            android:title="@string/menu_home" />-->
-<!--        <item-->
-<!--            android:id="@+id/nav_gallery"-->
-<!--            android:icon="@drawable/ic_menu_gallery"-->
-<!--            android:title="@string/menu_gallery" />-->
-<!--        <item-->
-<!--            android:id="@+id/nav_slideshow"-->
-<!--            android:icon="@drawable/ic_menu_slideshow"-->
-<!--            android:title="@string/menu_slideshow" />-->
     </group>
+
+    <!--        <item-->
+    <!--            android:id="@+id/nav_home"-->
+    <!--            android:icon="@drawable/ic_menu_camera"-->
+    <!--            android:title="@string/menu_home" />-->
+    <!--        <item-->
+    <!--            android:id="@+id/nav_gallery"-->
+    <!--            android:icon="@drawable/ic_menu_gallery"-->
+    <!--            android:title="@string/menu_gallery" />-->
+    <!--        <item-->
+    <!--            android:id="@+id/nav_slideshow"-->
+    <!--            android:icon="@drawable/ic_menu_slideshow"-->
+    <!--            android:title="@string/menu_slideshow" />-->
 </menu>
