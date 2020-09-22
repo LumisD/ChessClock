@@ -56,14 +56,70 @@ class HomeViewModel @Inject constructor(
 
                 game?.let {
                     //todo: handle restoring of game
+                    Timber.d("qwer getGame: %s", game)
 
+//                    systemMillis=1600739200634,
+//                    min=0,
+//                    sec=3,
+//                    inc=1,
+//                    whiteRest=2500,
+//                    blackRest=1900,
+//                    pausedMillis=774475,
+//                    pausedStartMillis=1600739201700,
+//
+//                    isWhiteFirst=true,
+//                    isFirstPlayerMoving=false,
+//                    isPaused=true
+
+                    //set live vars
                     restTimeWhiteLive.postValue(it.whiteRest)
                     restTimeBlackLive.postValue(it.blackRest)
 
+                    if (it.isWhiteFirst) {//whiteButton goes first
+                        if (it.isFirstPlayerMoving) {//whiteButton first AND white is moving
+                            if (it.isPaused) {
+                                whiteButtonBGLive.postValue(2)//paused
+                            } else {
+                                whiteButtonBGLive.postValue(1)//pressed
+                            }
+                            blackButtonBGLive.postValue(3)//waiting
+                        } else {//whiteButton first AND black is moving
+                            if (it.isPaused) {
+                                blackButtonBGLive.postValue(2)//paused
+                            } else {
+                                blackButtonBGLive.postValue(1)//pressed
+                            }
+                            whiteButtonBGLive.postValue(3)//waiting
+                        }
+                    } else {//blackButton goes first
+                        if (it.isFirstPlayerMoving) {//blackButton first AND black is moving
+                            if (it.isPaused) {
+                                blackButtonBGLive.postValue(2)//paused
+                            } else {
+                                blackButtonBGLive.postValue(1)//pressed
+                            }
+                            whiteButtonBGLive.postValue(3)//waiting
+                        } else {//blackButton first AND white is moving
+                            if (it.isPaused) {
+                                whiteButtonBGLive.postValue(2)//paused
+                            } else {
+                                whiteButtonBGLive.postValue(1)//pressed
+                            }
+                            blackButtonBGLive.postValue(3)//waiting
+                        }
+                    }
+
+                    isWhiteFirstLive.postValue(it.isWhiteFirst)
+
+                    if (it.isPaused) {
+                        changedToPauseIconLive.postValue(true)
+                    } else {
+                        changedToPauseIconLive.postValue(false)
+                    }
+
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
-                    whiteButtonBGLive.postValue(0)//starting(no one pressed)
-                    blackButtonBGLive.postValue(0)//starting(no one pressed)
-                }
+                }//game?.let
+
             }
         }
 
@@ -76,6 +132,7 @@ class HomeViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 game?.let {
                     if (it.blackRest != 0L && it.whiteRest != 0L) {
+                        Timber.d("qwer saveGame: %s", game)
                         gameRepository.insertGame(it)
                     }
                 }
