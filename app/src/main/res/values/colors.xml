@@ -13,6 +13,8 @@
     <color name="colorGray">#C0C0C0</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="red_icon">#FC0000</color>
+    <color name="colorWhiteGray">#33FFFFFF</color>
+    <color name="colorBlackGray">#cc000000</color>
 
     <!--    Backgrounds-->
     <color name="colorBackgroundWhite">#F0EFEF</color>
