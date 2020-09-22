@@ -129,23 +129,27 @@ object BindingAdapters {
 
         if (isWhiteFirst) {//WhiteButton is white
             if (buttonBG == 0) {
-                imageView.background = context.getDrawable(R.drawable.border_gray_button)
+                imageView.background = context.getDrawable(R.drawable.border_gray_button)//chess_paun_176x286
             } else if (buttonBG == 1) {
                 imageView.background = context.getDrawable(R.drawable.border_white_pressed)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_white_paused)
             } else {
                 imageView.background = context.getDrawable(R.drawable.border_white_waiting)
+                imageView.setImageResource(0)
             }
         } else {//WhiteButton is black
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
                 imageView.background = context.getDrawable(R.drawable.border_black_pressed)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_black_paused)
             } else {
                 imageView.background = context.getDrawable(R.drawable.border_black_waiting)
+                imageView.setImageResource(0)
             }
         }
 
@@ -178,20 +182,24 @@ object BindingAdapters {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
                 imageView.background = context.getDrawable(R.drawable.border_black_pressed)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_black_paused)
             } else {
                 imageView.background = context.getDrawable(R.drawable.border_black_waiting)
+                imageView.setImageResource(0)
             }
         } else {//BlackButton is white
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
                 imageView.background = context.getDrawable(R.drawable.border_white_pressed)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_white_paused)
             } else {
                 imageView.background = context.getDrawable(R.drawable.border_white_waiting)
+                imageView.setImageResource(0)
             }
         }
     }

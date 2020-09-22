@@ -27,6 +27,7 @@
             android:onClick="@{() -> viewModel.clickOnBlackButtonView()}"
             android:padding="@dimen/space_xxlarge"
             android:tag="black"
+            android:rotation="180"
             app:blackButtonsBG="@{viewModel.blackButtonBGLive}"
             app:isWhiteFirst="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
