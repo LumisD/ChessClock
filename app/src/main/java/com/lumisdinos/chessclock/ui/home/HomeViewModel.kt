@@ -23,13 +23,15 @@ class HomeViewModel @Inject constructor(
     private val _timeExpired = MutableLiveData<Event<String>>()
     val timeExpired: LiveData<Event<String>> = _timeExpired
 
-    val gameLive = MutableLiveData<Game?>()
     var game: Game? = null
 
     val timeControlLive = MutableLiveData<String>()
     val changedToPauseIconLive = MutableLiveData<Boolean>()
     val restTimeWhiteLive = MutableLiveData<Long>()
     val restTimeBlackLive = MutableLiveData<Long>()
+    var isWhiteFirstLive = MutableLiveData<Boolean>()//define was button was pressed first blackButtonView or blackButtonView
+    val blackButtonBGLive = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is pressed; 2 - is paused
+    val whiteButtonBGLive = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is pressed; 2 - is paused; 3 - waiting(no pressed, but another color is pressed)
 
     var timer: CountDownTimer? = null
 
@@ -47,14 +49,35 @@ class HomeViewModel @Inject constructor(
                     game!!.whiteRest = (AppConfig.min * 60 + AppConfig.sec) * 1000L
                     game!!.blackRest = game!!.whiteRest
                 }
+                gameRepository.deleteAllGame()
+
                 game?.let {
-                    timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
+                    //todo: handle restoring of game
+
                     restTimeWhiteLive.postValue(it.whiteRest)
                     restTimeBlackLive.postValue(it.blackRest)
+
+                    timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
+                    whiteButtonBGLive.postValue(0)//starting(no one pressed)
+                    blackButtonBGLive.postValue(0)//starting(no one pressed)
                 }
             }
         }
 
+    }
+
+
+    fun saveGame() {
+        Timber.d("qwer saveGame")
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.IO) {
+                game?.let {
+                    if (it.blackRest != 0L && it.whiteRest != 0L) {
+                        gameRepository.insertGame(it)
+                    }
+                }
+            }
+        }
     }
 
 
@@ -171,7 +194,13 @@ class HomeViewModel @Inject constructor(
                 val pausedTime = System.currentTimeMillis() - it.pausedStartMillis
                 it.pausedMillis += pausedTime
                 it.pausedStartMillis = 0L
+
                 changedToPauseIconLive.postValue(true)
+                if (whiteButtonBGLive.value == 2) {//white is paused
+                    whiteButtonBGLive.postValue(1)//white is pressed
+                } else if (blackButtonBGLive.value == 2) {//black is paused
+                    blackButtonBGLive.postValue(1)//black is pressed
+                }
             } else {
                 Timber.d("qwer clickOnPause if NOT it.isPaused)")
                 //pause time
@@ -182,7 +211,13 @@ class HomeViewModel @Inject constructor(
                 timer = null
                 it.isPaused = true
                 it.pausedStartMillis = System.currentTimeMillis()
+
                 changedToPauseIconLive.postValue(false)
+                if (whiteButtonBGLive.value == 1) {//white is pressed
+                    whiteButtonBGLive.postValue(2)//white is paused
+                } else if (blackButtonBGLive.value == 1) {//black is pressed
+                    blackButtonBGLive.postValue(2)//black is paused
+                }
             }
         }
     }
@@ -212,6 +247,15 @@ class HomeViewModel @Inject constructor(
             it.isFirstPlayerMoving = !it.isFirstPlayerMoving
             Timber.d("qwer handleNewMove isFirstPlayerMoving: %s", it.isFirstPlayerMoving)
         }
+
+        if (whiteButtonBGLive.value == 1) {//white is pressed
+            blackButtonBGLive.postValue(1)//black is pressed
+            whiteButtonBGLive.postValue(3)//white is waiting
+        } else if (blackButtonBGLive.value == 1) {//black is pressed
+            whiteButtonBGLive.postValue(1)//white is pressed
+            blackButtonBGLive.postValue(3)//black is waiting
+        }
+
         timer?.let { it.cancel() }
         timer = null
         startTimer()
@@ -313,6 +357,15 @@ class HomeViewModel @Inject constructor(
                 it.blackRest = it.whiteRest
                 it.isFirstPlayerMoving = true
                 it.isWhiteFirst = isWhiteFirst
+
+                isWhiteFirstLive.postValue(isWhiteFirst)
+                if (isWhiteFirst) {
+                    whiteButtonBGLive.postValue(1)//white is pressed
+                    blackButtonBGLive.postValue(3)//black is waiting
+                } else {
+                    blackButtonBGLive.postValue(1)//black is pressed
+                    whiteButtonBGLive.postValue(3)//white is waiting
+                }
 
                 timer?.let { it.cancel() }
                 timer = null

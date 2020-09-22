@@ -34,9 +34,9 @@ class HomeFragment : DaggerFragment(), DialogListener {
     private val viewModel by viewModels<HomeViewModel> { viewModelFactory }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         Timber.d("qwer onCreateView")
         viewDataBinding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -51,8 +51,20 @@ class HomeFragment : DaggerFragment(), DialogListener {
         viewModel.timeExpired.observe(viewLifecycleOwner, Observer {
             timeExpired(it)
         })
+    }
 
+
+    override fun onResume() {
+        super.onResume()
+        Timber.d("qwer onResume")
         viewModel.getGame()
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        Timber.d("qwer onPause")
+        viewModel.saveGame()
     }
 
 
@@ -82,9 +94,11 @@ class HomeFragment : DaggerFragment(), DialogListener {
 
     override fun onPositiveDialogClick(result: List<String>) {
         Timber.d("qwer onPositiveDialogClick action: %s", result[0])
-        when(result[0]) {
-            ACTION_TIME_EXPIRED -> {}
-            else -> {}
+        when (result[0]) {
+            ACTION_TIME_EXPIRED -> {
+            }
+            else -> {
+            }
         }
     }
 

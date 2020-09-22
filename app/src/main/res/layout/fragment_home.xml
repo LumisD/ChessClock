@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.lumisdinos.chessclock.ui.home.HomeViewModel" />
@@ -14,19 +13,21 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/table_cell_background"
         tools:context=".ui.home.HomeFragment">
 
         <ImageView
             android:id="@+id/blackButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:padding="@dimen/space_large"
-            android:background="@color/female_icon_color"
+            android:tag="black"
+            android:padding="@dimen/space_xxlarge"
             android:clickable="true"
             android:focusable="true"
-            app:srcCompat="@drawable/ic_camera_white_100dp"
             android:foreground="@drawable/ripple"
             android:onClick="@{() -> viewModel.clickOnBlackButtonView()}"
+            app:blackButtonsBG="@{viewModel.blackButtonBGLive}"
+            app:isWhiteFirst="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,12 +36,14 @@
 
         <TextView
             android:id="@+id/blackTimeTv"
+            android:tag="black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/clock_text_size"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/colorWhite"
             android:textStyle="bold"
             app:restClockTime="@{viewModel.restTimeBlackLive}"
+            app:buttonTextColor="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintTop_toTopOf="@+id/blackButtonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:background="@color/colorGray"
+            android:background="@drawable/border_gray_button"
             app:layout_constraintBottom_toTopOf="@+id/guidelineDown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -111,13 +114,14 @@
             android:id="@+id/whiteButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:padding="@dimen/space_large"
-            android:background="@color/male_icon_color"
+            android:tag="white"
+            android:padding="@dimen/space_xxlarge"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            app:srcCompat="@drawable/ic_camera_white_100dp"
             android:onClick="@{() -> viewModel.clickOnWhiteButtonView()}"
+            app:whiteButtonsBG="@{viewModel.whiteButtonBGLive}"
+            app:isWhiteFirst="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -126,12 +130,14 @@
 
         <TextView
             android:id="@+id/whiteTimeTv"
+            android:tag="white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/clock_text_size"
             android:textColor="@color/colorBlack"
             android:textStyle="bold"
             app:restClockTime="@{viewModel.restTimeWhiteLive}"
+            app:buttonTextColor="@{viewModel.isWhiteFirstLive}"
             app:layout_constraintBottom_toBottomOf="@+id/whiteButtonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
