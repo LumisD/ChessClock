@@ -119,8 +119,17 @@ class HomeViewModel @Inject constructor(
 
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                 }//game?.let
+                Timber.d("qwer getGame end of withContext")
 
             }
+
+            Timber.d("qwer getGame just after end of withContext")
+            game?.let {
+                if (!it.isPaused && it.systemMillis > 0) {
+                    startTimer()
+                }
+            }
+
         }
 
     }
