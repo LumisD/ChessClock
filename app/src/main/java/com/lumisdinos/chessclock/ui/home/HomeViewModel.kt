@@ -153,18 +153,32 @@ class HomeViewModel @Inject constructor(
     fun setChosenTimeControl(timeCtrl: String) {
         //"15, 0, 10"
         CoroutineScope(Dispatchers.Main).launch {
+            timer?.let { it.cancel() }
+            timer = null
             withContext(Dispatchers.IO) {
                 val times = timeCtrl.split(",").map { it.trim() }
                 Timber.d("qwer setChosenTimeControl: |%s|", times)
                 game?.let {
+                    //reset game
+                    it.systemMillis = 0L
+                    it.pausedMillis = 0L
+                    it.pausedStartMillis = 0L
+                    it.isWhiteFirst = true
+                    it.isFirstPlayerMoving = true
+                    it.isPaused = false
+                    //set new time control
                     it.min = strToInt(times[0])
                     it.sec = strToInt(times[1])
                     it.inc = strToInt(times[2])
                     it.whiteRest = (it.min * 60 + it.sec) * 1000L
                     it.blackRest = game!!.whiteRest
+
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                     restTimeWhiteLive.postValue(it.whiteRest)
                     restTimeBlackLive.postValue(it.blackRest)
+                    whiteButtonBGLive.postValue(0)//starting(no pressed)
+                    blackButtonBGLive.postValue(0)//starting(no pressed)
+                    changedToPauseIconLive.postValue(false)
                 }
 
             }
