@@ -14,7 +14,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/table_cell_background"
+        android:background="@color/colorPrimary"
         tools:context=".ui.home.HomeFragment">
 
         <ImageView
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.45" />
+            app:layout_constraintGuide_percent="0.46" />
 
 
         <LinearLayout
@@ -115,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.55" />
+            app:layout_constraintGuide_percent="0.54" />
 
 
         <ImageView
