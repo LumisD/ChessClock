@@ -56,7 +56,7 @@
     <dimen name="table_cell_small_text_size">12sp</dimen>
     <dimen name="table_cell_font_step">1sp</dimen>
     <dimen name="button_text_size">14sp</dimen>
-    <dimen name="clock_text_size">34sp</dimen>
+    <dimen name="clock_text_size">40sp</dimen>
     <dimen name="time_control_text_size">20sp</dimen>
 
     <!--    List item heights-->
