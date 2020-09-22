@@ -3,6 +3,7 @@ package com.lumisdinos.chessclock.common
 import android.annotation.SuppressLint
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
@@ -65,15 +66,18 @@ object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter("changePausedIcon")
-    fun convertChangePausedIcon(imageButton: ImageButton, changedToPauseIconLive: LiveData<Boolean>) {
+    fun convertChangePausedIcon(
+        imageButton: ImageButton,
+        changedToPauseIconLive: LiveData<Boolean>
+    ) {
         val changedToPause = changedToPauseIconLive.value ?: true
-       if (changedToPause) {
-           Timber.d("qwer changePausedIcon if (changedToPause)")
-           imageButton.setImageResource(R.drawable.ic_pause_black_24dp)
-       } else {
-           Timber.d("qwer changePausedIcon if NOT changedToPause)")
-           imageButton.setImageResource(R.drawable.ic_play_arrow_black_24dp)
-       }
+        if (changedToPause) {
+            Timber.d("qwer changePausedIcon if (changedToPause)")
+            imageButton.setImageResource(R.drawable.ic_pause_black_24dp)
+        } else {
+            Timber.d("qwer changePausedIcon if NOT changedToPause)")
+            imageButton.setImageResource(R.drawable.ic_play_arrow_black_24dp)
+        }
     }
 
 
@@ -91,14 +95,128 @@ object BindingAdapters {
         val str: String
 
         if (restTime < 20_000) {
-            str =  SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_DEC).format(Date(restTime))//m:ss.S
+            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_DEC).format(Date(restTime))//m:ss.S
         } else if (restTime < 600_000) {
-            str =  SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_LESS_10M).format(Date(restTime))//m:ss
+            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_LESS_10M).format(Date(restTime))//m:ss
         } else {
-            str =  SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT).format(Date(restTime))//mm:ss
+            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT).format(Date(restTime))//mm:ss
         }
 
         textView.text = str
+    }
+
+
+    @JvmStatic
+    @BindingAdapter(
+        value = ["whiteButtonsBG", "isWhiteFirst"],
+        requireAll = true
+    )
+    fun setWhiteButtonsBG(imageView: ImageView, whiteButtonBGLive: LiveData<Int>, isWhiteFirstLive: LiveData<Boolean>) {
+        //0 - starting(no pressed); 1 - is pressed; 2 - is paused; 3 - waiting(no pressed, but another color is pressed)
+        val buttonBG = whiteButtonBGLive.value ?: 0
+        val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst WhiteButton is white else WhiteButton is black
+        //Timber.d("qwer whiteButtonsBG buttonBG: %s", buttonBG)
+        val context = imageView.context
+        if (buttonBG == 2) {
+            if (isWhiteFirst) {
+                imageView.setImageResource(R.drawable.ic_pause_black_24dp)
+            } else {
+                imageView.setImageResource(R.drawable.ic_pause_white_24dp)
+            }
+        } else {
+            imageView.setImageResource(0)
+        }
+
+        if (isWhiteFirst) {//WhiteButton is white
+            if (buttonBG == 0) {
+                imageView.background = context.getDrawable(R.drawable.border_gray_button)
+            } else if (buttonBG == 1) {
+                imageView.background = context.getDrawable(R.drawable.border_white_pressed)
+            } else if (buttonBG == 2) {
+                imageView.background = context.getDrawable(R.drawable.border_white_paused)
+            } else {
+                imageView.background = context.getDrawable(R.drawable.border_white_waiting)
+            }
+        } else {//WhiteButton is black
+            if (buttonBG == 0) {
+                imageView.background = context.getDrawable(R.drawable.border_gray_button)
+            } else if (buttonBG == 1) {
+                imageView.background = context.getDrawable(R.drawable.border_black_pressed)
+            } else if (buttonBG == 2) {
+                imageView.background = context.getDrawable(R.drawable.border_black_paused)
+            } else {
+                imageView.background = context.getDrawable(R.drawable.border_black_waiting)
+            }
+        }
+
+    }
+
+
+    @JvmStatic
+    @BindingAdapter(
+        value = ["blackButtonsBG", "isWhiteFirst"],
+        requireAll = true
+    )
+    fun setBlackButtonsBG(imageView: ImageView, blackButtonBGLive: LiveData<Int>, isWhiteFirstLive: LiveData<Boolean>) {
+        //0 - starting(no pressed); 1 - is pressed; 2 - is paused; 3 - waiting(no pressed, but another color is pressed)
+        val buttonBG = blackButtonBGLive.value ?: 0
+        val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst BlackButton is black else BlackButton is white
+        val context = imageView.context
+        //Timber.d("qwer setBlackButtonsBG buttonBG: %s", buttonBG)
+        if (buttonBG == 2) {
+            if (isWhiteFirst) {
+                imageView.setImageResource(R.drawable.ic_pause_white_24dp)
+            } else {
+                imageView.setImageResource(R.drawable.ic_pause_black_24dp)
+            }
+        } else {
+            imageView.setImageResource(0)
+        }
+
+        if (isWhiteFirst) {//BlackButton is black
+            if (buttonBG == 0) {
+                imageView.background = context.getDrawable(R.drawable.border_gray_button)
+            } else if (buttonBG == 1) {
+                imageView.background = context.getDrawable(R.drawable.border_black_pressed)
+            } else if (buttonBG == 2) {
+                imageView.background = context.getDrawable(R.drawable.border_black_paused)
+            } else {
+                imageView.background = context.getDrawable(R.drawable.border_black_waiting)
+            }
+        } else {//BlackButton is white
+            if (buttonBG == 0) {
+                imageView.background = context.getDrawable(R.drawable.border_gray_button)
+            } else if (buttonBG == 1) {
+                imageView.background = context.getDrawable(R.drawable.border_white_pressed)
+            } else if (buttonBG == 2) {
+                imageView.background = context.getDrawable(R.drawable.border_white_paused)
+            } else {
+                imageView.background = context.getDrawable(R.drawable.border_white_waiting)
+            }
+        }
+    }
+
+
+    @JvmStatic
+    @BindingAdapter("buttonTextColor")
+    fun convertButtonTextColor(textView: TextView, isWhiteFirstLive: LiveData<Boolean>) {
+        val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst BlackButton is black else BlackButton is white
+        val tag = textView.tag
+        val context = textView.context
+        if (isWhiteFirst) {
+            if (tag == "white") {//whiteButton plays white
+                textView.setTextColor(context.resources.getColor(R.color.colorBlack))
+            } else {
+                textView.setTextColor(context.resources.getColor(R.color.colorWhite))
+            }
+
+        } else {
+            if (tag == "white") {//whiteButton plays black
+                textView.setTextColor(context.resources.getColor(R.color.colorWhite))
+            } else {
+                textView.setTextColor(context.resources.getColor(R.color.colorBlack))
+            }
+        }
     }
 
 
@@ -216,18 +334,6 @@ object BindingAdapters {
             textView.setTextColor(context.resources.getColor(R.color.green_text))
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //    @JvmStatic
