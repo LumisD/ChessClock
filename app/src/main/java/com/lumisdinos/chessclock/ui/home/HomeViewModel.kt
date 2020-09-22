@@ -51,11 +51,18 @@ class HomeViewModel @Inject constructor(
                     game!!.inc = AppConfig.inc
                     game!!.whiteRest = (AppConfig.min * 60 + AppConfig.sec) * 1000L
                     game!!.blackRest = game!!.whiteRest
+                } else {
+                    game?.let {
+                        val timeGameWasClosed = System.currentTimeMillis() - it.systemMillis
+                        if (timeGameWasClosed > it.whiteRest && timeGameWasClosed > it.blackRest) {
+                            resetGame()
+                        }
+                    }
+
                 }
                 gameRepository.deleteAllGame()
 
                 game?.let {
-                    //todo: handle restoring of game
                     Timber.d("qwer getGame: %s", game)
 
 //                    systemMillis=1600739200634,
@@ -159,19 +166,13 @@ class HomeViewModel @Inject constructor(
                 val times = timeCtrl.split(",").map { it.trim() }
                 Timber.d("qwer setChosenTimeControl: |%s|", times)
                 game?.let {
-                    //reset game
-                    it.systemMillis = 0L
-                    it.pausedMillis = 0L
-                    it.pausedStartMillis = 0L
-                    it.isWhiteFirst = true
-                    it.isFirstPlayerMoving = true
-                    it.isPaused = false
                     //set new time control
                     it.min = strToInt(times[0])
                     it.sec = strToInt(times[1])
                     it.inc = strToInt(times[2])
-                    it.whiteRest = (it.min * 60 + it.sec) * 1000L
-                    it.blackRest = game!!.whiteRest
+
+                    //reset game
+                    resetGame()
 
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                     restTimeWhiteLive.postValue(it.whiteRest)
@@ -280,9 +281,9 @@ class HomeViewModel @Inject constructor(
                 it.isPaused = false
                 startTimer()
                 //add paused time
-                val pausedTime = System.currentTimeMillis() - it.pausedStartMillis
-                it.pausedMillis += pausedTime
-                it.pausedStartMillis = 0L
+//                val pausedTime = System.currentTimeMillis() - it.pausedStartMillis
+//                it.pausedMillis += pausedTime
+//                it.pausedStartMillis = 0L
 
                 changedToPauseIconLive.postValue(true)
                 if (whiteButtonBGLive.value == 2) {//white is paused
@@ -298,7 +299,7 @@ class HomeViewModel @Inject constructor(
                 }
                 timer = null
                 it.isPaused = true
-                it.pausedStartMillis = System.currentTimeMillis()
+                //it.pausedStartMillis = System.currentTimeMillis()
 
                 changedToPauseIconLive.postValue(false)
                 if (whiteButtonBGLive.value == 1) {//white is pressed
@@ -417,8 +418,8 @@ class HomeViewModel @Inject constructor(
                     } else if (!it.isFirstPlayerMoving) {
                         sideWhichExpired = "black"
                     }
-//                    //set to 0 rest time
-//                    if (it.isFirstPlayerMoving) it.whiteRest = 0L else it.blackRest = 0L
+//                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
+                    if (it.whiteRest < it.blackRest) it.whiteRest = 0L else it.blackRest = 0L
                     //refresh
                     restTimeWhiteLive.postValue(it.whiteRest)
                     restTimeBlackLive.postValue(it.blackRest)
@@ -458,6 +459,22 @@ class HomeViewModel @Inject constructor(
         }
 
         return false
+    }
+
+
+    private fun resetGame() {
+        game?.let {
+            Timber.d("qwer resetGame")
+            it.systemMillis = 0L
+            //it.pausedMillis = 0L
+            //it.pausedStartMillis = 0L
+            it.isWhiteFirst = true
+            it.isFirstPlayerMoving = true
+            it.isPaused = false
+
+            it.whiteRest = (it.min * 60 + it.sec) * 1000L
+            it.blackRest = game!!.whiteRest
+        }
     }
 
 

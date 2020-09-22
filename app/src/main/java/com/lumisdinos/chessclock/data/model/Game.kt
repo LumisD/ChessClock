@@ -15,8 +15,8 @@ data class Game constructor(
     @ColumnInfo(name = "white_rest") var whiteRest: Long = 0L,
     @ColumnInfo(name = "black_rest") var blackRest: Long = 0L,
 
-    @ColumnInfo(name = "paused_millis") var pausedMillis: Long = 0L,//full time when was paused
-    @ColumnInfo(name = "paused_start_millis") var pausedStartMillis: Long = 0L,//last time it was paused
+    //@ColumnInfo(name = "paused_millis") var pausedMillis: Long = 0L,//full time when was paused
+    //@ColumnInfo(name = "paused_start_millis") var pausedStartMillis: Long = 0L,//last time it was paused
 
     @ColumnInfo(name = "is_white_first") var isWhiteFirst: Boolean = true,//it determines if white side moved first move in a game
     @ColumnInfo(name = "is_first_player_moving") var isFirstPlayerMoving: Boolean = true,//it works together with isWhiteFirst: it determines if a player who moved first move (black or white side) is moving(thinking and his clock is moving) now
