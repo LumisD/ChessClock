@@ -119,9 +119,9 @@ object BindingAdapters {
         val context = imageView.context
         if (buttonBG == 2) {
             if (isWhiteFirst) {
-                imageView.setImageResource(R.drawable.ic_pause_black_24dp)
+                imageView.setImageResource(R.drawable.ic_play_arrow_black_24dp)
             } else {
-                imageView.setImageResource(R.drawable.ic_pause_white_24dp)
+                imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
             }
         } else {
             imageView.setImageResource(0)
@@ -169,9 +169,9 @@ object BindingAdapters {
         //Timber.d("qwer setBlackButtonsBG buttonBG: %s", buttonBG)
         if (buttonBG == 2) {
             if (isWhiteFirst) {
-                imageView.setImageResource(R.drawable.ic_pause_white_24dp)
+                imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
             } else {
-                imageView.setImageResource(R.drawable.ic_pause_black_24dp)
+                imageView.setImageResource(R.drawable.ic_play_arrow_black_24dp)
             }
         } else {
             imageView.setImageResource(0)
