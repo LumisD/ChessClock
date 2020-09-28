@@ -156,9 +156,11 @@ class HomeViewModel @Inject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             withContext(Dispatchers.IO) {
                 game?.let {
-                    if (it.blackRest != 0L && it.whiteRest != 0L) {
+                    if (it.blackRest != 0L && it.whiteRest != 0L && !it.isGameFinished) {
                         Timber.d("qwer saveGame: %s", game)
                         gameRepository.insertGame(it)
+                    } else {
+                        gameRepository.deleteAllGame()
                     }
                 }
             }
@@ -207,6 +209,11 @@ class HomeViewModel @Inject constructor(
     fun clickOnBlackButtonView() {
         Timber.d("qwer clickOnBlackButtonView")
         CoroutineScope(Dispatchers.Main).launch {
+            game?.let {
+                if (it.isGameFinished) {
+                    return@launch
+                }
+            }
 
             var isTheFirstMove = false
             if (game == null) return@launch
@@ -255,6 +262,11 @@ class HomeViewModel @Inject constructor(
     fun clickOnWhiteButtonView() {
         Timber.d("qwer clickOnWhiteButtonView")
         CoroutineScope(Dispatchers.Main).launch {
+            game?.let {
+                if (it.isGameFinished) {
+                    return@launch
+                }
+            }
 
             var isTheFirstMove = false
             if (game == null) return@launch
@@ -303,6 +315,10 @@ class HomeViewModel @Inject constructor(
 
     fun clickOnPause() {
         game?.let {
+            if (it.isGameFinished) {
+                return
+            }
+
             if (it.isPaused) {
                 Timber.d("qwer clickOnPause if (it.isPaused)")
                 //start again
@@ -393,19 +409,29 @@ class HomeViewModel @Inject constructor(
         Timber.d("qwer startTimer millFuture: %s", millFuture)
 
         var ticks = 0
+        game?.let {
+            it.tickSystemMillis = 0
+        }
 
+        Timber.d("qwer startTimer just before first onTick")
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
-
+                //Timber.d("qwer onTick")
                 game?.let {
                     val restTime: Long
+
+                    if (it.tickSystemMillis == 0L) {
+                        it.tickSystemMillis = System.currentTimeMillis() - 4
+                    }
+
+
                     if (isWhiteThinkingCurrently) {
-                        it.whiteRest -= 100L
+                        it.whiteRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.whiteRest < 0L) it.whiteRest = 0L
                         //Timber.d("qwer onTick whiteRest: %s", it.whiteRest)
                         restTime = it.whiteRest
                     } else {
-                        it.blackRest -= 100L
+                        it.blackRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.blackRest < 0L) it.blackRest = 0L
                         //Timber.d("qwer onTick blackRest: %s", it.blackRest)
                         restTime = it.blackRest
@@ -414,12 +440,13 @@ class HomeViewModel @Inject constructor(
                     //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
+                        Timber.d("qwer startTimer refresh every 100ms ticks: %s, whiteRest: %s, blackRest: %s", ticks, it.whiteRest, it.blackRest)
                         restTimeWhiteLive.postValue(it.whiteRest)
                         restTimeBlackLive.postValue(it.blackRest)
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
-                            //Timber.d("qwer startTimer refresh only every sec ticks: %s", ticks)
+                            Timber.d("qwer startTimer refresh only every sec ticks: %s, whiteRest: %s, blackRest: %s", ticks, it.whiteRest, it.blackRest)
                             restTimeWhiteLive.postValue(it.whiteRest)
                             restTimeBlackLive.postValue(it.blackRest)
                         }
@@ -432,31 +459,38 @@ class HomeViewModel @Inject constructor(
 
             override fun onFinish() {
                 Timber.d("qwer startTimer onFinish")
-                var sideWhichExpired = "white"
-
-                game?.let {
-                    //define which side expired: who started
-                    Timber.d(
-                        "qwer startTimer onFinish whiteRest: %s, blackRest: %s",
-                        it.whiteRest,
-                        it.blackRest
-                    )
-                    if (it.isFirstPlayerThinking) {
-                        sideWhichExpired = "white"
-                    } else if (!it.isFirstPlayerThinking) {
-                        sideWhichExpired = "black"
-                    }
-//                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
-                    if (it.whiteRest < it.blackRest) it.whiteRest = 0L else it.blackRest = 0L
-                    //refresh
-                    restTimeWhiteLive.postValue(it.whiteRest)
-                    restTimeBlackLive.postValue(it.blackRest)
-                }
-
-                _timeExpired.postValue(Event(sideWhichExpired))
+                onFinishTime()
             }
         }
         timer!!.start()
+    }
+
+
+    private fun onFinishTime() {
+        Timber.d("qwer onFinishTime")
+        var sideWhichExpired = "white"
+
+        game?.let {
+            //define which side expired: who started
+            Timber.d(
+                "qwer onFinishTime whiteRest: %s, blackRest: %s",
+                it.whiteRest,
+                it.blackRest
+            )
+            it.isGameFinished = true
+            if (it.isFirstPlayerThinking) {
+                sideWhichExpired = "white"
+            } else if (!it.isFirstPlayerThinking) {
+                sideWhichExpired = "black"
+            }
+//                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
+            if (it.whiteRest < it.blackRest) it.whiteRest = 0L else it.blackRest = 0L
+            //refresh
+            restTimeWhiteLive.postValue(it.whiteRest)
+            restTimeBlackLive.postValue(it.blackRest)
+        }
+
+        _timeExpired.postValue(Event(sideWhichExpired))
     }
 
 
@@ -469,6 +503,7 @@ class HomeViewModel @Inject constructor(
                 it.whiteRest = (it.min * 60 + it.sec) * 1000L
                 it.blackRest = it.whiteRest
                 it.isFirstPlayerThinking = false
+                it.isGameFinished = false
                 it.isWhiteFirst = isWhiteFirst
 
                 isWhiteFirstLive.postValue(isWhiteFirst)
@@ -499,6 +534,7 @@ class HomeViewModel @Inject constructor(
             it.isWhiteFirst = true
             it.isFirstPlayerThinking = true
             it.isPaused = false
+            it.isGameFinished = false
 
             it.whiteRest = (it.min * 60 + it.sec) * 1000L
             it.blackRest = game!!.whiteRest
