@@ -22,7 +22,6 @@ import com.lumisdinos.tabletransform.common.extension.toNotNull
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 object BindingAdapters {
@@ -112,7 +111,7 @@ object BindingAdapters {
         requireAll = true
     )
     fun setWhiteButtonsBG(imageView: ImageView, whiteButtonBGLive: LiveData<Int>, isWhiteFirstLive: LiveData<Boolean>) {
-        //0 - starting(no pressed); 1 - is pressed; 2 - is paused; 3 - waiting(no pressed, but another color is pressed)
+        //0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
         val buttonBG = whiteButtonBGLive.value ?: 0
         val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst WhiteButton is white else WhiteButton is black
         //Timber.d("qwer whiteButtonsBG buttonBG: %s", buttonBG)
@@ -129,27 +128,27 @@ object BindingAdapters {
 
         if (isWhiteFirst) {//WhiteButton is white
             if (buttonBG == 0) {
-                imageView.background = context.getDrawable(R.drawable.border_gray_button)//chess_paun_176x286
+                imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
-                imageView.background = context.getDrawable(R.drawable.border_white_pressed)
-                imageView.setImageResource(R.drawable.chess_paun_176x286)
+                imageView.background = context.getDrawable(R.drawable.border_white_not_thinking)
+                imageView.setImageResource(0)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_white_paused)
             } else {
-                imageView.background = context.getDrawable(R.drawable.border_white_waiting)
-                imageView.setImageResource(0)
+                imageView.background = context.getDrawable(R.drawable.border_white_thinking)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
         } else {//WhiteButton is black
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
-                imageView.background = context.getDrawable(R.drawable.border_black_pressed)
-                imageView.setImageResource(R.drawable.chess_paun_176x286)
+                imageView.background = context.getDrawable(R.drawable.border_black_not_thinking)
+                imageView.setImageResource(0)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_black_paused)
             } else {
-                imageView.background = context.getDrawable(R.drawable.border_black_waiting)
-                imageView.setImageResource(0)
+                imageView.background = context.getDrawable(R.drawable.border_black_thinking)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
         }
 
@@ -162,7 +161,7 @@ object BindingAdapters {
         requireAll = true
     )
     fun setBlackButtonsBG(imageView: ImageView, blackButtonBGLive: LiveData<Int>, isWhiteFirstLive: LiveData<Boolean>) {
-        //0 - starting(no pressed); 1 - is pressed; 2 - is paused; 3 - waiting(no pressed, but another color is pressed)
+        //0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
         val buttonBG = blackButtonBGLive.value ?: 0
         val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst BlackButton is black else BlackButton is white
         val context = imageView.context
@@ -181,25 +180,25 @@ object BindingAdapters {
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
-                imageView.background = context.getDrawable(R.drawable.border_black_pressed)
-                imageView.setImageResource(R.drawable.chess_paun_176x286)
+                imageView.background = context.getDrawable(R.drawable.border_black_not_thinking)
+                imageView.setImageResource(0)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_black_paused)
             } else {
-                imageView.background = context.getDrawable(R.drawable.border_black_waiting)
-                imageView.setImageResource(0)
+                imageView.background = context.getDrawable(R.drawable.border_black_thinking)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
         } else {//BlackButton is white
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
-                imageView.background = context.getDrawable(R.drawable.border_white_pressed)
-                imageView.setImageResource(R.drawable.chess_paun_176x286)
+                imageView.background = context.getDrawable(R.drawable.border_white_not_thinking)
+                imageView.setImageResource(0)
             } else if (buttonBG == 2) {
                 imageView.background = context.getDrawable(R.drawable.border_white_paused)
             } else {
-                imageView.background = context.getDrawable(R.drawable.border_white_waiting)
-                imageView.setImageResource(0)
+                imageView.background = context.getDrawable(R.drawable.border_white_thinking)
+                imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
         }
     }

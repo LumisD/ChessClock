@@ -37,8 +37,8 @@ class HomeViewModel @Inject constructor(
     val restTimeWhiteLive = MutableLiveData<Long>()
     val restTimeBlackLive = MutableLiveData<Long>()
     var isWhiteFirstLive = MutableLiveData<Boolean>()//define was button was pressed first blackButtonView or blackButtonView
-    val blackButtonBGLive = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is pressed; 2 - is paused
-    val whiteButtonBGLive = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is pressed; 2 - is paused; 3 - waiting(no pressed, but another color is pressed)
+    val blackButtonBGLive = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
+    val whiteButtonBGLive = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
 
     var timer: CountDownTimer? = null
 
@@ -86,46 +86,51 @@ class HomeViewModel @Inject constructor(
                     restTimeWhiteLive.postValue(it.whiteRest)
                     restTimeBlackLive.postValue(it.blackRest)
 
-                    if (it.isWhiteFirst) {//whiteButton goes first
-                        if (it.isFirstPlayerMoving) {//whiteButton first AND white is moving
-                            if (it.isPaused) {
-                                whiteButtonBGLive.postValue(2)//paused
-                            } else {
-                                whiteButtonBGLive.postValue(1)//pressed
+                    if (it.systemMillis > 0) {//only consider this if a game is not new
+                        if (it.isWhiteFirst) {//whiteButton goes first
+                            if (it.isFirstPlayerThinking) {//whiteButton first AND white is thinking
+                                if (it.isPaused) {
+                                    whiteButtonBGLive.postValue(2)//paused
+                                } else {
+                                    whiteButtonBGLive.postValue(3)//thinking
+                                }
+                                blackButtonBGLive.postValue(1)//not thinking
+                            } else {//whiteButton first AND black is moving
+                                if (it.isPaused) {
+                                    blackButtonBGLive.postValue(2)//paused
+                                } else {
+                                    blackButtonBGLive.postValue(3)//thinking
+                                }
+                                whiteButtonBGLive.postValue(1)//not thinking
                             }
-                            blackButtonBGLive.postValue(3)//waiting
-                        } else {//whiteButton first AND black is moving
-                            if (it.isPaused) {
-                                blackButtonBGLive.postValue(2)//paused
-                            } else {
-                                blackButtonBGLive.postValue(1)//pressed
+                        } else {//blackButton goes first
+                            if (it.isFirstPlayerThinking) {//blackButton first AND black is thinking
+                                if (it.isPaused) {
+                                    blackButtonBGLive.postValue(2)//paused
+                                } else {
+                                    blackButtonBGLive.postValue(3)//thinking
+                                }
+                                whiteButtonBGLive.postValue(3)//not thinking
+                            } else {//blackButton first AND white is moving
+                                if (it.isPaused) {
+                                    whiteButtonBGLive.postValue(2)//paused
+                                } else {
+                                    whiteButtonBGLive.postValue(3)//thinking
+                                }
+                                blackButtonBGLive.postValue(1)//not thinking
                             }
-                            whiteButtonBGLive.postValue(3)//waiting
-                        }
-                    } else {//blackButton goes first
-                        if (it.isFirstPlayerMoving) {//blackButton first AND black is moving
-                            if (it.isPaused) {
-                                blackButtonBGLive.postValue(2)//paused
-                            } else {
-                                blackButtonBGLive.postValue(1)//pressed
-                            }
-                            whiteButtonBGLive.postValue(3)//waiting
-                        } else {//blackButton first AND white is moving
-                            if (it.isPaused) {
-                                whiteButtonBGLive.postValue(2)//paused
-                            } else {
-                                whiteButtonBGLive.postValue(1)//pressed
-                            }
-                            blackButtonBGLive.postValue(3)//waiting
                         }
                     }
+
 
                     isWhiteFirstLive.postValue(it.isWhiteFirst)
 
                     if (it.isPaused) {
-                        changedToPauseIconLive.postValue(true)
-                    } else {
+                        Timber.d("qwer getGame changedToPauseIconLive = false")
                         changedToPauseIconLive.postValue(false)
+                    } else {
+                        Timber.d("qwer getGame changedToPauseIconLive = true")
+                        changedToPauseIconLive.postValue(true)
                     }
 
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
@@ -183,7 +188,8 @@ class HomeViewModel @Inject constructor(
                     restTimeBlackLive.postValue(it.blackRest)
                     whiteButtonBGLive.postValue(0)//starting(no pressed)
                     blackButtonBGLive.postValue(0)//starting(no pressed)
-                    changedToPauseIconLive.postValue(false)
+                    Timber.d("qwer setChosenTimeControl changedToPauseIconLive = true")
+                    changedToPauseIconLive.postValue(true)
                 }
 
             }
@@ -201,39 +207,46 @@ class HomeViewModel @Inject constructor(
     fun clickOnBlackButtonView() {
         Timber.d("qwer clickOnBlackButtonView")
         CoroutineScope(Dispatchers.Main).launch {
-            _moveSound.postValue(Event(true))
 
             var isTheFirstMove = false
             if (game == null) return@launch
             isTheFirstMove = startFirstMove(false)
-            if (isTheFirstMove) return@launch
+            if (isTheFirstMove) {
+                _moveSound.postValue(Event(true))
+                return@launch
+            }
 
             game?.let {
 
                 //define which clock is going
-                var blackIsMoving = false
-                if (it.isWhiteFirst && !it.isFirstPlayerMoving) {//white was first, but now not his move -> so, black is moving
-                    blackIsMoving = true
-                } else if (!it.isWhiteFirst && it.isFirstPlayerMoving) {//white was not first, but now move of first player -> so, black is moving
-                    blackIsMoving = true
+                var blackIsThinking = false
+                if (it.isWhiteFirst && !it.isFirstPlayerThinking) {//white was first, but now not his move -> so, black is thinking
+                    blackIsThinking = true
+                } else if (!it.isWhiteFirst && it.isFirstPlayerThinking) {//white was not first, but now move of first player -> so, black is thinking
+                    blackIsThinking = true
                 }
 
-                //if currently black clock is moving - only proceed if it's paused by black AND black side pressed his button again
-                if (blackIsMoving) {
-                    //player pressed again his button
+                //if currently black clock is moving/thinking - proceed in 2 cases:
+                // a) if it's paused by black AND black side pressed his button again
+                // b) black pressed his button
+                if (blackIsThinking) {
                     if (it.isPaused) {
-                        //only proceed if before pause it was black moving
+                        //only proceed if before pause it was black thinking
                         clickOnPause()
+                    } else {
+                        _moveSound.postValue(Event(true))
+                        handleNewMove(false)
                     }
                     return@launch
-                } else {
-                    //if currently black clock is NOT moving - only proceed if it's NOT paused (by white side player)
-                    if (it.isPaused) {
-                        //it was paused when white player's clock was going
-                        return@launch
-                    }
-                    handleNewMove(true)
                 }
+//                else {
+//                    //if currently black clock is NOT moving/thinking - only proceed if it's NOT paused (by white side player)
+//                    if (it.isPaused) {
+//                        //it was paused when white player's clock was going
+//                        return@launch
+//                    }
+//                    handleNewMove(true)
+//                }
             }
         }
     }
@@ -242,39 +255,46 @@ class HomeViewModel @Inject constructor(
     fun clickOnWhiteButtonView() {
         Timber.d("qwer clickOnWhiteButtonView")
         CoroutineScope(Dispatchers.Main).launch {
-            _moveSound.postValue(Event(true))
 
             var isTheFirstMove = false
             if (game == null) return@launch
             isTheFirstMove = startFirstMove(true)
-            if (isTheFirstMove) return@launch
+            if (isTheFirstMove) {
+                _moveSound.postValue(Event(true))
+                return@launch
+            }
 
             game?.let {
 
                 //define which clock is going
-                var whiteIsMoving = false
-                if (it.isWhiteFirst && it.isFirstPlayerMoving) {//white was first, AND now move of first player -> so, white is moving
-                    whiteIsMoving = true
-                } else if (!it.isWhiteFirst && !it.isFirstPlayerMoving) {//white was not first, AND now move of not first player -> so, black is moving
-                    whiteIsMoving = true
+                var whiteIsThinking = false
+                if (it.isWhiteFirst && it.isFirstPlayerThinking) {//white was first, AND now move of first player -> so, white is whiteIsThinking
+                    whiteIsThinking = true
+                } else if (!it.isWhiteFirst && !it.isFirstPlayerThinking) {//white was not first, AND now move of not first player -> so, white is whiteIsThinking
+                    whiteIsThinking = true
                 }
 
-                //if currently white clock is moving - only proceed if it's paused by white AND white side pressed his button again
-                if (whiteIsMoving) {
-                    //player pressed again his button
+                //if currently white clock is moving/thinking - proceed in 2 cases:
+                // a) if it's paused by white AND white side pressed his button again
+                // b) white pressed his button
+                if (whiteIsThinking) {
                     if (it.isPaused) {
                         //only proceed if before pause it was white moving
                         clickOnPause()
+                    } else {
+                        _moveSound.postValue(Event(true))
+                        handleNewMove(true)
                     }
                     return@launch
-                } else {
-                    //if currently white clock is NOT moving - only proceed if it's NOT paused (by black side player)
-                    if (it.isPaused) {
-                        //it was paused when black player's clock was going
-                        return@launch
-                    }
-                    handleNewMove(false)
                 }
+//                else {
+//                    //if currently white clock is NOT moving - only proceed if it's NOT paused (by black side player)
+//                    if (it.isPaused) {
+//                        //it was paused when black player's clock was going
+//                        return@launch
+//                    }
+//                    handleNewMove(false)
+//                }
             }
         }
 
@@ -295,9 +315,9 @@ class HomeViewModel @Inject constructor(
 
                 changedToPauseIconLive.postValue(true)
                 if (whiteButtonBGLive.value == 2) {//white is paused
-                    whiteButtonBGLive.postValue(1)//white is pressed
+                    whiteButtonBGLive.postValue(3)//white is thinking
                 } else if (blackButtonBGLive.value == 2) {//black is paused
-                    blackButtonBGLive.postValue(1)//black is pressed
+                    blackButtonBGLive.postValue(3)//black is thinking
                 }
             } else {
                 Timber.d("qwer clickOnPause if NOT it.isPaused)")
@@ -310,9 +330,9 @@ class HomeViewModel @Inject constructor(
                 //it.pausedStartMillis = System.currentTimeMillis()
 
                 changedToPauseIconLive.postValue(false)
-                if (whiteButtonBGLive.value == 1) {//white is pressed
+                if (whiteButtonBGLive.value == 3) {//white is thinking
                     whiteButtonBGLive.postValue(2)//white is paused
-                } else if (blackButtonBGLive.value == 1) {//black is pressed
+                } else if (blackButtonBGLive.value == 3) {//black is thinking
                     blackButtonBGLive.postValue(2)//black is paused
                 }
             }
@@ -335,16 +355,16 @@ class HomeViewModel @Inject constructor(
             }
 
             it.systemMillis = System.currentTimeMillis()
-            it.isFirstPlayerMoving = !it.isFirstPlayerMoving
-            Timber.d("qwer handleNewMove isFirstPlayerMoving: %s", it.isFirstPlayerMoving)
+            it.isFirstPlayerThinking = !it.isFirstPlayerThinking
+            Timber.d("qwer handleNewMove isFirstPlayerMoving: %s", it.isFirstPlayerThinking)
         }
 
-        if (whiteButtonBGLive.value == 1) {//white is pressed
-            blackButtonBGLive.postValue(1)//black is pressed
-            whiteButtonBGLive.postValue(3)//white is waiting
-        } else if (blackButtonBGLive.value == 1) {//black is pressed
-            whiteButtonBGLive.postValue(1)//white is pressed
-            blackButtonBGLive.postValue(3)//black is waiting
+        if (whiteButtonBGLive.value == 3) {//white WAS thinking
+            blackButtonBGLive.postValue(3)//black is thinking
+            whiteButtonBGLive.postValue(1)//white is not thinking
+        } else if (blackButtonBGLive.value == 3) {//black WAS thinking
+            whiteButtonBGLive.postValue(3)//white is thinking
+            blackButtonBGLive.postValue(1)//black is not thinking
         }
 
         startTimer()
@@ -355,21 +375,21 @@ class HomeViewModel @Inject constructor(
         timer?.let { it.cancel() }
         timer = null
 
-        var isWhiteMovingCurrently = false
+        var isWhiteThinkingCurrently = false
         game?.let {
 
-            if (it.isFirstPlayerMoving && it.isWhiteFirst) {
-                isWhiteMovingCurrently = true
-            } else if (!it.isFirstPlayerMoving && !it.isWhiteFirst) {
-                isWhiteMovingCurrently = true
-            } else if (!it.isFirstPlayerMoving && it.isWhiteFirst) {
-                isWhiteMovingCurrently = false
-            } else if (it.isFirstPlayerMoving && !it.isWhiteFirst) {
-                isWhiteMovingCurrently = false
+            if (it.isFirstPlayerThinking && it.isWhiteFirst) {
+                isWhiteThinkingCurrently = true
+            } else if (!it.isFirstPlayerThinking && !it.isWhiteFirst) {
+                isWhiteThinkingCurrently = true
+            } else if (!it.isFirstPlayerThinking && it.isWhiteFirst) {
+                isWhiteThinkingCurrently = false
+            } else if (it.isFirstPlayerThinking && !it.isWhiteFirst) {
+                isWhiteThinkingCurrently = false
             }
         }
 
-        val millFuture = if (isWhiteMovingCurrently) game!!.whiteRest else game!!.blackRest
+        val millFuture = if (isWhiteThinkingCurrently) game!!.whiteRest else game!!.blackRest
         Timber.d("qwer startTimer millFuture: %s", millFuture)
 
         var ticks = 0
@@ -379,7 +399,7 @@ class HomeViewModel @Inject constructor(
 
                 game?.let {
                     val restTime: Long
-                    if (isWhiteMovingCurrently) {
+                    if (isWhiteThinkingCurrently) {
                         it.whiteRest -= 100L
                         if (it.whiteRest < 0L) it.whiteRest = 0L
                         //Timber.d("qwer onTick whiteRest: %s", it.whiteRest)
@@ -421,9 +441,9 @@ class HomeViewModel @Inject constructor(
                         it.whiteRest,
                         it.blackRest
                     )
-                    if (it.isFirstPlayerMoving) {
+                    if (it.isFirstPlayerThinking) {
                         sideWhichExpired = "white"
-                    } else if (!it.isFirstPlayerMoving) {
+                    } else if (!it.isFirstPlayerThinking) {
                         sideWhichExpired = "black"
                     }
 //                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
@@ -448,16 +468,16 @@ class HomeViewModel @Inject constructor(
                 it.systemMillis = System.currentTimeMillis()
                 it.whiteRest = (it.min * 60 + it.sec) * 1000L
                 it.blackRest = it.whiteRest
-                it.isFirstPlayerMoving = true
+                it.isFirstPlayerThinking = false
                 it.isWhiteFirst = isWhiteFirst
 
                 isWhiteFirstLive.postValue(isWhiteFirst)
                 if (isWhiteFirst) {
-                    whiteButtonBGLive.postValue(1)//white is pressed
-                    blackButtonBGLive.postValue(3)//black is waiting
+                    whiteButtonBGLive.postValue(1)//white is not thinking
+                    blackButtonBGLive.postValue(3)//black is thinking
                 } else {
-                    blackButtonBGLive.postValue(1)//black is pressed
-                    whiteButtonBGLive.postValue(3)//white is waiting
+                    blackButtonBGLive.postValue(1)//black is not thinking
+                    whiteButtonBGLive.postValue(3)//white is thinking
                 }
 
                 startTimer()
@@ -477,7 +497,7 @@ class HomeViewModel @Inject constructor(
             //it.pausedMillis = 0L
             //it.pausedStartMillis = 0L
             it.isWhiteFirst = true
-            it.isFirstPlayerMoving = true
+            it.isFirstPlayerThinking = true
             it.isPaused = false
 
             it.whiteRest = (it.min * 60 + it.sec) * 1000L
