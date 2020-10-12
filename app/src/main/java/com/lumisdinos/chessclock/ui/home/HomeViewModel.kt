@@ -126,20 +126,16 @@ class HomeViewModel @Inject constructor(
                     isWhiteFirstLive.postValue(it.isWhiteFirst)
 
                     if (it.isPaused) {
-                        Timber.d("qwer getGame changedToPauseIconLive = false")
                         changedToPauseIconLive.postValue(false)
                     } else {
-                        Timber.d("qwer getGame changedToPauseIconLive = true")
                         changedToPauseIconLive.postValue(true)
                     }
 
                     timeControlLive.postValue("${it.min}, ${it.sec}, ${it.inc}")
                 }//game?.let
-                Timber.d("qwer getGame end of withContext")
 
             }
 
-            Timber.d("qwer getGame just after end of withContext")
             game?.let {
                 if (!it.isPaused && it.systemMillis > 0) {
                     startTimer()
@@ -152,7 +148,6 @@ class HomeViewModel @Inject constructor(
 
 
     fun saveGame() {
-        Timber.d("qwer saveGame")
         CoroutineScope(Dispatchers.Main).launch {
             withContext(Dispatchers.IO) {
                 game?.let {
@@ -175,7 +170,7 @@ class HomeViewModel @Inject constructor(
             timer = null
             withContext(Dispatchers.IO) {
                 val times = timeCtrl.split(",").map { it.trim() }
-                Timber.d("qwer setChosenTimeControl: |%s|", times)
+
                 game?.let {
                     //set new time control
                     it.min = strToInt(times[0])
@@ -190,7 +185,7 @@ class HomeViewModel @Inject constructor(
                     restTimeBlackLive.postValue(it.blackRest)
                     whiteButtonBGLive.postValue(0)//starting(no pressed)
                     blackButtonBGLive.postValue(0)//starting(no pressed)
-                    Timber.d("qwer setChosenTimeControl changedToPauseIconLive = true")
+
                     changedToPauseIconLive.postValue(true)
                 }
 
@@ -201,7 +196,6 @@ class HomeViewModel @Inject constructor(
 
 
     fun clickShowMenu() {
-        Timber.d("qwer clickShowMenu")
         _openDrawer.postValue(Event(true))
     }
 
@@ -246,14 +240,6 @@ class HomeViewModel @Inject constructor(
                     }
                     return@launch
                 }
-//                else {
-//                    //if currently black clock is NOT moving/thinking - only proceed if it's NOT paused (by white side player)
-//                    if (it.isPaused) {
-//                        //it was paused when white player's clock was going
-//                        return@launch
-//                    }
-//                    handleNewMove(true)
-//                }
             }
         }
     }
@@ -299,14 +285,6 @@ class HomeViewModel @Inject constructor(
                     }
                     return@launch
                 }
-//                else {
-//                    //if currently white clock is NOT moving - only proceed if it's NOT paused (by black side player)
-//                    if (it.isPaused) {
-//                        //it was paused when black player's clock was going
-//                        return@launch
-//                    }
-//                    handleNewMove(false)
-//                }
             }
         }
 
@@ -362,17 +340,14 @@ class HomeViewModel @Inject constructor(
             //add increment
             if (it.inc > 0) {
                 if (isWhiteMovingCurrently) {
-                    Timber.d("qwer handleNewMove whiteRest += it.inc * 1000")
                     it.whiteRest += it.inc * 1000
                 } else {
-                    Timber.d("qwer handleNewMove blackRest += it.inc * 1000")
                     it.blackRest += it.inc * 1000
                 }
             }
 
             it.systemMillis = System.currentTimeMillis()
             it.isFirstPlayerThinking = !it.isFirstPlayerThinking
-            Timber.d("qwer handleNewMove isFirstPlayerMoving: %s", it.isFirstPlayerThinking)
         }
 
         if (whiteButtonBGLive.value == 3) {//white WAS thinking
@@ -406,17 +381,14 @@ class HomeViewModel @Inject constructor(
         }
 
         val millFuture = if (isWhiteThinkingCurrently) game!!.whiteRest else game!!.blackRest
-        Timber.d("qwer startTimer millFuture: %s", millFuture)
 
         var ticks = 0
         game?.let {
             it.tickSystemMillis = 0
         }
 
-        Timber.d("qwer startTimer just before first onTick")
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                //Timber.d("qwer onTick")
                 game?.let {
                     val restTime: Long
 
@@ -428,25 +400,21 @@ class HomeViewModel @Inject constructor(
                     if (isWhiteThinkingCurrently) {
                         it.whiteRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.whiteRest < 0L) it.whiteRest = 0L
-                        //Timber.d("qwer onTick whiteRest: %s", it.whiteRest)
                         restTime = it.whiteRest
                     } else {
                         it.blackRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.blackRest < 0L) it.blackRest = 0L
-                        //Timber.d("qwer onTick blackRest: %s", it.blackRest)
                         restTime = it.blackRest
                     }
 
                     //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
-                        Timber.d("qwer startTimer refresh every 100ms ticks: %s, whiteRest: %s, blackRest: %s", ticks, it.whiteRest, it.blackRest)
                         restTimeWhiteLive.postValue(it.whiteRest)
                         restTimeBlackLive.postValue(it.blackRest)
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
-                            Timber.d("qwer startTimer refresh only every sec ticks: %s, whiteRest: %s, blackRest: %s", ticks, it.whiteRest, it.blackRest)
                             restTimeWhiteLive.postValue(it.whiteRest)
                             restTimeBlackLive.postValue(it.blackRest)
                         }
@@ -458,7 +426,6 @@ class HomeViewModel @Inject constructor(
             }
 
             override fun onFinish() {
-                Timber.d("qwer startTimer onFinish")
                 onFinishTime()
             }
         }
@@ -467,16 +434,10 @@ class HomeViewModel @Inject constructor(
 
 
     private fun onFinishTime() {
-        Timber.d("qwer onFinishTime")
         var sideWhichExpired = "white"
 
         game?.let {
             //define which side expired: who started
-            Timber.d(
-                "qwer onFinishTime whiteRest: %s, blackRest: %s",
-                it.whiteRest,
-                it.blackRest
-            )
             it.isGameFinished = true
             if (it.isFirstPlayerThinking) {
                 sideWhichExpired = "white"
@@ -497,7 +458,6 @@ class HomeViewModel @Inject constructor(
     private fun startFirstMove(isWhiteFirst: Boolean): Boolean {
         game?.let {
             if (it.systemMillis == 0L) {
-                Timber.d("qwer startFirstMove")
                 //the game is not started yet
                 it.systemMillis = System.currentTimeMillis()
                 it.whiteRest = (it.min * 60 + it.sec) * 1000L
@@ -527,10 +487,7 @@ class HomeViewModel @Inject constructor(
 
     private fun resetGame() {
         game?.let {
-            Timber.d("qwer resetGame")
             it.systemMillis = 0L
-            //it.pausedMillis = 0L
-            //it.pausedStartMillis = 0L
             it.isWhiteFirst = true
             it.isFirstPlayerThinking = true
             it.isPaused = false

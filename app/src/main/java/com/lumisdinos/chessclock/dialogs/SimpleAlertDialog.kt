@@ -42,30 +42,6 @@ fun getAlertDialogFull(
     return dialog
 }
 
-fun getAlertDialog(
-    context: Context,
-    action: String,
-    listener: DialogListener,
-    title: String,
-    message: String,
-    btnPositive: String,
-    btnNeutral: String
-): AlertDialog {
-    return getAlertDialogFull(context, action, "", listener, title, message, btnPositive, "", btnNeutral)
-}
-
-fun getAlertDialog(
-    context: Context,
-    action: String,
-    additional: String,
-    listener: DialogListener,
-    title: String,
-    message: String,
-    btnPositive: String,
-    btnNeutral: String
-): AlertDialog {
-    return getAlertDialogFull(context, action, additional, listener, title, message, btnPositive, "", btnNeutral)
-}
 
 fun getAlertDialog(
     context: Context,

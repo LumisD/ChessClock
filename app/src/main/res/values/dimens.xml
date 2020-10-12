@@ -4,80 +4,23 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-
-    <dimen name="list_item_padding">8dp</dimen>
-    <dimen name="icon_info_size">128dp</dimen>
-    <dimen name="image_size">350dp</dimen>
-
-    <dimen name="space_none">0dp</dimen>
-    <dimen name="extra_xsmall">1dp</dimen>
-    <dimen name="space_extra_xsmall">2dp</dimen>
-    <dimen name="space_extra_xxsmall">4dp</dimen>
-    <dimen name="space_extra_xxxsmall">6dp</dimen>
 
     <dimen name="space_small">8dp</dimen>
-    <dimen name="space_xsmall">10dp</dimen>
-    <dimen name="space_xxsmall">12dp</dimen>
-    <dimen name="space_xxxsmall">14dp</dimen>
 
     <dimen name="space_normal">16dp</dimen>
-    <dimen name="space_xnormal">18dp</dimen>
-    <dimen name="space_xxnormal">20dp</dimen>
-    <dimen name="space_xxxnormal">22dp</dimen>
 
-    <dimen name="space_large">24dp</dimen>
-    <dimen name="space_mlarge">26dp</dimen>
-    <dimen name="space_xlarge">32dp</dimen>
     <dimen name="space_xxlarge">64dp</dimen>
-    <dimen name="space_xxxlarge">98dp</dimen>
 
     <!--    Table margin/padding-->
     <!--    table_cell_margin is used for program calculations-->
-    <dimen name="table_cell_margin">2dp</dimen>
     <!--    table_cell_width_step is used for up/down cell width-->
-    <dimen name="table_cell_width_step">15dp</dimen>
-    <dimen name="table_padding">1dp</dimen>
-    <dimen name="table_cell_start_padding">5dp</dimen>
-    <dimen name="table_cell_bottom_padding">2dp</dimen>
-    <dimen name="table_cell_min_width">120dp</dimen>
-
-    <dimen name="checkbox_min_width">60dp</dimen>
-    <dimen name="combine_icon_on_left">50dp</dimen>
 
     <!--    Button width/height-->
-    <dimen name="button_width">80dp</dimen>
-    <dimen name="button_height">40dp</dimen>
-    <dimen name="button_square">46dp</dimen>
 
     <!--    Text sizes-->
-    <dimen name="dialog_tips_text_size">15sp</dimen>
-    <dimen name="table_cell_text_size">13sp</dimen>
-    <dimen name="table_cell_small_text_size">12sp</dimen>
-    <dimen name="table_cell_font_step">1sp</dimen>
-    <dimen name="button_text_size">14sp</dimen>
     <dimen name="clock_text_size">40sp</dimen>
     <dimen name="time_control_text_size">20sp</dimen>
 
     <!--    List item heights-->
-    <dimen name="list_item_smaller_4_height">35dp</dimen>
-    <dimen name="list_item_smaller_3_height">40dp</dimen>
-    <dimen name="list_item_smaller_2_height">45dp</dimen>
-    <dimen name="list_item_smaller_1_height">55dp</dimen>
-    <dimen name="list_item_normal_height">64dp</dimen>
-    <dimen name="list_item_bigger_1_height">78dp</dimen>
-    <dimen name="list_item_bigger_2_height">95dp</dimen>
-    <dimen name="list_item_bigger_3_height">115dp</dimen>
-    <dimen name="list_item_bigger_4_height">133dp</dimen>
-    <dimen name="list_item_big_1_height">150dp</dimen>
-    <dimen name="list_item_big_2_height">166dp</dimen>
-    <dimen name="list_item_big_3_height">184dp</dimen>
-    <dimen name="list_item_big_4_height">202dp</dimen>
-    <dimen name="list_item_extra_big_1_height">230dp</dimen>
-
-    <dimen name="spinner_text_size">16sp</dimen>
-    <dimen name="spinner_small_text_size">13sp</dimen>
-    <dimen name="settings_text_size">16sp</dimen>
-    <dimen name="settings_small_text_size">13sp</dimen>
 
 </resources>

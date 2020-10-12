@@ -4,92 +4,86 @@
     tools:showIn="navigation_view">
 
 
-    <group
-        android:id="@+id/menuCustomTime"
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/customTime"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/custom_time" />
     </group>
 
-    <group
-        android:id="@+id/menuFisherTime"
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
 
         <item
             android:id="@+id/t_15_10"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_15_10" />
 
         <item
             android:id="@+id/t_5_5"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_5_5" />
 
         <item
             android:id="@+id/t_3_2"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_3_2" />
 
         <item
             android:id="@+id/t_2_1"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_2_1" />
 
         <item
             android:id="@+id/t_1_1"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_1_1" />
 
         <item
             android:id="@+id/t_45_45"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_45_45" />
     </group>
 
-    <group
-        android:id="@+id/menuSimpleTime"
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/t_60"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_60" />
 
         <item
             android:id="@+id/t_30"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_30" />
 
         <item
             android:id="@+id/t_20"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_20" />
 
         <item
             android:id="@+id/t_10"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_10" />
 
         <item
             android:id="@+id/t_5"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_5" />
 
         <item
             android:id="@+id/t_3"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_3" />
 
         <item
             android:id="@+id/t_1"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_baseline_timer_24"
             android:title="@string/_1" />
     </group>
 
     <!--        <item-->
     <!--            android:id="@+id/nav_home"-->
-    <!--            android:icon="@drawable/ic_menu_camera"-->
+    <!--            android:icon="@drawable/ic_baseline_timer_24"-->
     <!--            android:title="@string/menu_home" />-->
     <!--        <item-->
     <!--            android:id="@+id/nav_gallery"-->

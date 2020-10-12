@@ -17,7 +17,6 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import com.lumisdinos.chessclock.data.Constants._1
 import com.lumisdinos.chessclock.data.Constants._10
-import com.lumisdinos.chessclock.data.Constants._10secTest
 import com.lumisdinos.chessclock.data.Constants._15_10
 import com.lumisdinos.chessclock.data.Constants._1_1
 import com.lumisdinos.chessclock.data.Constants._20

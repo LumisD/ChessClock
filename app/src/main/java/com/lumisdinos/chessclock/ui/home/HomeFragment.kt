@@ -40,7 +40,6 @@ class HomeFragment : DaggerFragment(), DialogListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("qwer onCreateView")
         viewDataBinding = FragmentHomeBinding.inflate(inflater, container, false)
         viewDataBinding.viewModel = viewModel
         return viewDataBinding.root
@@ -58,14 +57,12 @@ class HomeFragment : DaggerFragment(), DialogListener {
 
     override fun onResume() {
         super.onResume()
-        Timber.d("qwer onResume")
         viewModel.getGame()
     }
 
 
     override fun onPause() {
         super.onPause()
-        Timber.d("qwer onPause")
         viewModel.saveGame()
     }
 
@@ -101,7 +98,6 @@ class HomeFragment : DaggerFragment(), DialogListener {
     private fun timeExpired(event: Event<String>) {
         if (isClickedSingle()) return
         event.getContentIfNotHandled()?.let {
-            Timber.d("qwer timeExpired")
             getAlertDialog(
                 requireContext(),
                 ACTION_TIME_EXPIRED,

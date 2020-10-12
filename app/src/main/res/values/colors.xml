@@ -8,43 +8,18 @@
     <color name="colorPrimaryDark">#946144</color>
     <color name="colorAccent">#D81B60</color>
 
-    <color name="transparent">#00000000</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGray">#C0C0C0</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="red_icon">#FC0000</color>
     <color name="colorWhiteGray">#CFCFCF</color>
     <color name="colorBlackGray">#444444</color>
     <color name="green">#008577</color>
 
     <!--    Backgrounds-->
-    <color name="colorBackgroundWhite">#F0EFEF</color>
-    <color name="table_cell_background">#F0EFEF</color>
-    <color name="combined_background_1">#D0DFDF</color>
-    <color name="combined_background_2">#C0CFC0</color>
 
     <!--    Texts-->
-    <color name="black_text">#000000</color>
-    <color name="white_text">#FFFFFF</color>
-    <color name="red_text">#D81B60</color>
-    <color name="green_text">#008577</color>
 
     <!--    Lines-->
-    <color name="table_border">#1c324a</color>
 
 
-
-    <color name="selected_background_color">#15a4fa</color>
-    <color name="unselected_background_color">#1c324a</color>
-    <color name="shadow_background_color">#28415f</color>
-    <color name="unselected_header_background_color">#1f3650</color>
-
-    <color name="unselected_text_color">#537095</color>
-    <color name="selected_text_color">#ffffff</color>
-    <color name="separator_color">#273e5b</color>
-
-    <color name="popup_menu_item_text_color">#88a5c9</color>
-
-    <color name="female_icon_color">#e9515f</color>
-    <color name="male_icon_color">#f28944</color>
 </resources>
