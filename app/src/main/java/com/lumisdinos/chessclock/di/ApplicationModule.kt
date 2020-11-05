@@ -5,6 +5,8 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.lumisdinos.chessclock.data.Database
+import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepository
+import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepositoryImpl
 import com.lumisdinos.chessclock.data.repository.GameRepository
 import com.lumisdinos.chessclock.data.repository.GameRepositoryImpl
 import dagger.Binds
@@ -46,8 +48,10 @@ object ApplicationModule {
 @Module
 abstract class ApplicationModuleBinds {
 
-    //Game binds
     @Binds
     abstract fun bindGameRepositoryImpl(repository: GameRepositoryImpl): GameRepository
+
+    @Binds
+    abstract fun bindChessClockLogicRepositoryImpl(repository: ChessClockLogicRepositoryImpl): ChessClockLogicRepository
 
 }

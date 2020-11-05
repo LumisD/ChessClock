@@ -8,9 +8,11 @@ interface GameRepository {
 
     suspend fun getFirstGame(): Game?
 
+    suspend fun resetGame(game: Game?)
+
     suspend fun getGameById(gameId: Int): Game?
 
-    suspend fun insertGame(game: Game)
+    suspend fun insertIfNotEmptyTime(game: Game?)
 
     suspend fun deleteGame(gameId: Int): Int
 
