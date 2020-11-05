@@ -24,12 +24,12 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            android:onClick="@{() -> viewModel.clickOnBlackButtonView()}"
+            android:onClick="@{() -> viewModel.clickOnTopButtonView()}"
             android:padding="@dimen/space_xxlarge"
             android:tag="black"
             android:rotation="180"
-            app:blackButtonsBG="@{viewModel.blackButtonBG}"
-            app:isWhiteFirst="@{viewModel.isWhiteFirst}"
+            app:topButtonsBG="@{viewModel.topButtonBG}"
+            app:isBottomFirst="@{viewModel.isBottomFirst}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,11 +46,11 @@
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:buttonTextColor="@{viewModel.isWhiteFirst}"
+            app:buttonTextColor="@{viewModel.isBottomFirst}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/blackButtonView"
-            app:restClockTime="@{viewModel.restTimeBlack}" />
+            app:restClockTime="@{viewModel.restTimeTop}" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -126,19 +126,19 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            android:onClick="@{() -> viewModel.clickOnWhiteButtonView()}"
+            android:onClick="@{() -> viewModel.clickOnBottomButtonView()}"
             android:padding="@dimen/space_xxlarge"
             android:tag="white"
-            app:isWhiteFirst="@{viewModel.isWhiteFirst}"
+            app:isBottomFirst="@{viewModel.isBottomFirst}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guidelineDown"
-            app:whiteButtonsBG="@{viewModel.whiteButtonBG}"
+            app:bottomButtonsBG="@{viewModel.bottomButtonBG}"
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/whiteTimeTv"
+            android:id="@+id/bottomTimeTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/space_small"
@@ -146,11 +146,11 @@
             android:textColor="@color/colorBlack"
             android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:buttonTextColor="@{viewModel.isWhiteFirst}"
+            app:buttonTextColor="@{viewModel.isBottomFirst}"
             app:layout_constraintBottom_toBottomOf="@+id/whiteButtonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:restClockTime="@{viewModel.restTimeWhite}" />
+            app:restClockTime="@{viewModel.restTimeBottom}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

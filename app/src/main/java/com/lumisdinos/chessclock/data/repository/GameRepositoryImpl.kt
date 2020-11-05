@@ -41,7 +41,7 @@ class GameRepositoryImpl @Inject constructor(
     override suspend fun resetGame(game: Game?){
         game?.let {
             it.systemMillis = 0L
-            it.isWhiteFirst = true
+            it.isBottomFirst = true
             it.isFirstPlayerThinking = true
             it.isPaused = false
             it.isGameFinished = false

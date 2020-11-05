@@ -94,17 +94,17 @@ object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter(
-        value = ["whiteButtonsBG", "isWhiteFirst"],
+        value = ["bottomButtonsBG", "isBottomFirst"],
         requireAll = true
     )
-    fun setWhiteButtonsBG(imageView: ImageView, whiteButtonBGLive: LiveData<Int>, isWhiteFirstLive: LiveData<Boolean>) {
+    fun setBottomButtonsBG(imageView: ImageView, bottomButtonBGLive: LiveData<Int>, isBottomFirstLive: LiveData<Boolean>) {
         //0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
-        val buttonBG = whiteButtonBGLive.value ?: 0
-        val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst WhiteButton is white else WhiteButton is black
+        val buttonBG = bottomButtonBGLive.value ?: 0
+        val isBottomFirst = isBottomFirstLive.value ?: true//if isBottomFirst BottomButton is white else BottomButton is black
 
         val context = imageView.context
         if (buttonBG == 2) {
-            if (isWhiteFirst) {
+            if (isBottomFirst) {
                 imageView.setImageResource(R.drawable.ic_play_arrow_black_24dp)
             } else {
                 imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
@@ -113,7 +113,7 @@ object BindingAdapters {
             imageView.setImageResource(0)
         }
 
-        if (isWhiteFirst) {//WhiteButton is white
+        if (isBottomFirst) {//BottomButton is white
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
@@ -125,7 +125,7 @@ object BindingAdapters {
                 imageView.background = context.getDrawable(R.drawable.border_white_thinking)
                 imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
-        } else {//WhiteButton is black
+        } else {//BottomButton is black
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
@@ -144,17 +144,17 @@ object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter(
-        value = ["blackButtonsBG", "isWhiteFirst"],
+        value = ["topButtonsBG", "isBottomFirst"],
         requireAll = true
     )
-    fun setBlackButtonsBG(imageView: ImageView, blackButtonBGLive: LiveData<Int>, isWhiteFirstLive: LiveData<Boolean>) {
+    fun setTopButtonsBG(imageView: ImageView, topButtonBGLive: LiveData<Int>, isBottomFirstLive: LiveData<Boolean>) {
         //0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
-        val buttonBG = blackButtonBGLive.value ?: 0
-        val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst BlackButton is black else BlackButton is white
+        val buttonBG = topButtonBGLive.value ?: 0
+        val isBottomFirst = isBottomFirstLive.value ?: true//if isBottomFirst topButton is black else topButton is white
         val context = imageView.context
 
         if (buttonBG == 2) {
-            if (isWhiteFirst) {
+            if (isBottomFirst) {
                 imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
             } else {
                 imageView.setImageResource(R.drawable.ic_play_arrow_black_24dp)
@@ -163,7 +163,7 @@ object BindingAdapters {
             imageView.setImageResource(0)
         }
 
-        if (isWhiteFirst) {//BlackButton is black
+        if (isBottomFirst) {//TopButton is black
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
@@ -175,7 +175,7 @@ object BindingAdapters {
                 imageView.background = context.getDrawable(R.drawable.border_black_thinking)
                 imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
-        } else {//BlackButton is white
+        } else {//TopButton is white
             if (buttonBG == 0) {
                 imageView.background = context.getDrawable(R.drawable.border_gray_button)
             } else if (buttonBG == 1) {
@@ -193,19 +193,19 @@ object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter("buttonTextColor")
-    fun convertButtonTextColor(textView: TextView, isWhiteFirstLive: LiveData<Boolean>) {
-        val isWhiteFirst = isWhiteFirstLive.value ?: true//if isWhiteFirst BlackButton is black else BlackButton is white
+    fun convertButtonTextColor(textView: TextView, isBottomFirstLive: LiveData<Boolean>) {
+        val isBottomFirst = isBottomFirstLive.value ?: true//if isWhiteFirst BlackButton is black else BlackButton is white
         val tag = textView.tag
         val context = textView.context
-        if (isWhiteFirst) {
-            if (tag == "white") {//whiteButton plays white
+        if (isBottomFirst) {
+            if (tag == "white") {//bottomButton plays white
                 textView.setTextColor(context.resources.getColor(R.color.colorBlack))
             } else {
                 textView.setTextColor(context.resources.getColor(R.color.colorWhite))
             }
 
         } else {
-            if (tag == "white") {//whiteButton plays black
+            if (tag == "white") {//bottomButton plays black
                 textView.setTextColor(context.resources.getColor(R.color.colorWhite))
             } else {
                 textView.setTextColor(context.resources.getColor(R.color.colorBlack))

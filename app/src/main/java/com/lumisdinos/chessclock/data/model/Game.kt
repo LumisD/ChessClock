@@ -16,7 +16,7 @@ data class Game constructor(
     @ColumnInfo(name = "white_rest") var whiteRest: Long = 0L,
     @ColumnInfo(name = "black_rest") var blackRest: Long = 0L,
 
-    @ColumnInfo(name = "is_white_first") var isWhiteFirst: Boolean = true,//it determines if white side moved first move in a game
+    @ColumnInfo(name = "is_white_first") var isBottomFirst: Boolean = true,//it determines if bottom side moved first move in a game
     @ColumnInfo(name = "is_first_player_moving") var isFirstPlayerThinking: Boolean = true,//it works together with isWhiteFirst: it determines if a player is moving(thinking and his clock is moving) now
     @ColumnInfo(name = "is_paused") var isPaused: Boolean = false,
     @ColumnInfo(name = "is_game_finished") var isGameFinished: Boolean = false//to not permit continue a game when one player spent all his time

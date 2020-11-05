@@ -7,11 +7,11 @@ interface ChessClockLogicRepository {
 
     var timeControl: MutableLiveData<String>
     var changedToPauseIcon: MutableLiveData<Boolean>
-    var restTimeWhite: MutableLiveData<Long>
-    var restTimeBlack: MutableLiveData<Long>
-    var isWhiteFirst: MutableLiveData<Boolean>
-    var blackButtonBG: MutableLiveData<Int>
-    var whiteButtonBG: MutableLiveData<Int>
+    var restTimeBottom: MutableLiveData<Long>
+    var restTimeTop: MutableLiveData<Long>
+    var isBottomFirst: MutableLiveData<Boolean>
+    var topButtonBG: MutableLiveData<Int>
+    var bottomButtonBG: MutableLiveData<Int>
 
     var timeExpired: MutableLiveData<Event<String>>
     var moveSound: MutableLiveData<Event<Boolean>>
@@ -22,9 +22,9 @@ interface ChessClockLogicRepository {
 
     fun setChosenTimeControl(timeCtrl: String)
 
-    fun clickBlackButton()
+    fun clickBottomButton()
 
-    fun clickWhiteButton()
+    fun clickTopButton()
 
     fun clickPause()
 }

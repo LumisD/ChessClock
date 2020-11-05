@@ -16,11 +16,11 @@ class HomeViewModel @Inject constructor(
 
     val timeControl: LiveData<String> = logicRepo.timeControl
     val changedToPauseIcon: LiveData<Boolean> = logicRepo.changedToPauseIcon
-    val restTimeWhite: LiveData<Long> = logicRepo.restTimeWhite
-    val restTimeBlack: LiveData<Long> = logicRepo.restTimeBlack
-    var isWhiteFirst: LiveData<Boolean> = logicRepo.isWhiteFirst
-    val blackButtonBG: LiveData<Int> = logicRepo.blackButtonBG
-    val whiteButtonBG: LiveData<Int> = logicRepo.whiteButtonBG
+    val restTimeBottom: LiveData<Long> = logicRepo.restTimeBottom
+    val restTimeTop: LiveData<Long> = logicRepo.restTimeTop
+    var isBottomFirst: LiveData<Boolean> = logicRepo.isBottomFirst
+    val topButtonBG: LiveData<Int> = logicRepo.topButtonBG
+    val bottomButtonBG: LiveData<Int> = logicRepo.bottomButtonBG
 
     val moveSound: LiveData<Event<Boolean>> = logicRepo.moveSound
     val timeExpired: LiveData<Event<String>> = logicRepo.timeExpired
@@ -41,13 +41,13 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun clickOnBlackButtonView() {
-        logicRepo.clickBlackButton()
+    fun clickOnTopButtonView() {
+        logicRepo.clickBottomButton()
     }
 
 
-    fun clickOnWhiteButtonView() {
-        logicRepo.clickWhiteButton()
+    fun clickOnBottomButtonView() {
+        logicRepo.clickTopButton()
     }
 
 

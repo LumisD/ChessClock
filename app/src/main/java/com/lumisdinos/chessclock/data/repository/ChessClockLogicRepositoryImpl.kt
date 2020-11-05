@@ -18,11 +18,11 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
     override var timeControl = MutableLiveData<String>()
     override var changedToPauseIcon = MutableLiveData<Boolean>()
-    override var restTimeWhite = MutableLiveData<Long>()
-    override var restTimeBlack = MutableLiveData<Long>()
-    override var isWhiteFirst = MutableLiveData<Boolean>()//pressed first blackButtonView or blackButtonView
-    override var blackButtonBG = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
-    override var whiteButtonBG = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
+    override var restTimeBottom = MutableLiveData<Long>()
+    override var restTimeTop = MutableLiveData<Long>()
+    override var isBottomFirst = MutableLiveData<Boolean>()//pressed first bottomButtonView or topButtonView
+    override var topButtonBG = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
+    override var bottomButtonBG = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
 
     override var timeExpired = MutableLiveData<Event<String>>()
     override var moveSound = MutableLiveData<Event<Boolean>>()
@@ -39,47 +39,47 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     Timber.d("qwer getGame: %s", game)
 
                     //set live vars
-                    restTimeWhite.postValue(it.whiteRest)
-                    restTimeBlack.postValue(it.blackRest)
+                    restTimeBottom.postValue(it.whiteRest)
+                    restTimeTop.postValue(it.blackRest)
 
                     if (it.systemMillis > 0) {//only consider this if a game is not new
-                        if (it.isWhiteFirst) {//whiteButton goes first
-                            if (it.isFirstPlayerThinking) {//whiteButton first AND white is thinking
+                        if (it.isBottomFirst) {//bottomButton goes first
+                            if (it.isFirstPlayerThinking) {//bottomButton first AND white is thinking
                                 if (it.isPaused) {
-                                    whiteButtonBG.postValue(2)//paused
+                                    bottomButtonBG.postValue(2)//paused
                                 } else {
-                                    whiteButtonBG.postValue(3)//thinking
+                                    bottomButtonBG.postValue(3)//thinking
                                 }
-                                blackButtonBG.postValue(1)//not thinking
-                            } else {//whiteButton first AND black is moving
+                                topButtonBG.postValue(1)//not thinking
+                            } else {//bottomButton first AND black is moving
                                 if (it.isPaused) {
-                                    blackButtonBG.postValue(2)//paused
+                                    topButtonBG.postValue(2)//paused
                                 } else {
-                                    blackButtonBG.postValue(3)//thinking
+                                    topButtonBG.postValue(3)//thinking
                                 }
-                                whiteButtonBG.postValue(1)//not thinking
+                                bottomButtonBG.postValue(1)//not thinking
                             }
                         } else {//blackButton goes first
-                            if (it.isFirstPlayerThinking) {//blackButton first AND black is thinking
+                            if (it.isFirstPlayerThinking) {//topButton first AND black is thinking
                                 if (it.isPaused) {
-                                    blackButtonBG.postValue(2)//paused
+                                    topButtonBG.postValue(2)//paused
                                 } else {
-                                    blackButtonBG.postValue(3)//thinking
+                                    topButtonBG.postValue(3)//thinking
                                 }
-                                whiteButtonBG.postValue(3)//not thinking
-                            } else {//blackButton first AND white is moving
+                                bottomButtonBG.postValue(3)//not thinking
+                            } else {//topButton first AND white is moving
                                 if (it.isPaused) {
-                                    whiteButtonBG.postValue(2)//paused
+                                    bottomButtonBG.postValue(2)//paused
                                 } else {
-                                    whiteButtonBG.postValue(3)//thinking
+                                    bottomButtonBG.postValue(3)//thinking
                                 }
-                                blackButtonBG.postValue(1)//not thinking
+                                topButtonBG.postValue(1)//not thinking
                             }
                         }
                     }
 
 
-                    isWhiteFirst.postValue(it.isWhiteFirst)
+                    isBottomFirst.postValue(it.isBottomFirst)
 
                     if (it.isPaused) {
                         changedToPauseIcon.postValue(false)
@@ -128,10 +128,10 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     gameRepository.resetGame(game)
 
                     timeControl.postValue("${it.min}, ${it.sec}, ${it.inc}")
-                    restTimeWhite.postValue(it.whiteRest)
-                    restTimeBlack.postValue(it.blackRest)
-                    whiteButtonBG.postValue(0)//starting(no pressed)
-                    blackButtonBG.postValue(0)//starting(no pressed)
+                    restTimeBottom.postValue(it.whiteRest)
+                    restTimeTop.postValue(it.blackRest)
+                    bottomButtonBG.postValue(0)//starting(no pressed)
+                    topButtonBG.postValue(0)//starting(no pressed)
 
                     changedToPauseIcon.postValue(true)
                 }
@@ -141,7 +141,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun clickBlackButton(){
+    override fun clickBottomButton(){
         Timber.d("qwer clickOnBlackButtonView")
         CoroutineScope(Dispatchers.Main).launch {
             game?.let {
@@ -162,15 +162,15 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
                 //define which clock is going
                 var blackIsThinking = false
-                if (it.isWhiteFirst && !it.isFirstPlayerThinking) {//white was first, but now not his move -> so, black is thinking
+                if (it.isBottomFirst && !it.isFirstPlayerThinking) {//bottom was first, but now not his move -> so, top is thinking
                     blackIsThinking = true
-                } else if (!it.isWhiteFirst && it.isFirstPlayerThinking) {//white was not first, but now move of first player -> so, black is thinking
+                } else if (!it.isBottomFirst && it.isFirstPlayerThinking) {//bottom was not first, but now move of first player -> so, top is thinking
                     blackIsThinking = true
                 }
 
-                //if currently black clock is moving/thinking - proceed in 2 cases:
-                // a) if it's paused by black AND black side pressed his button again
-                // b) black pressed his button
+                //if currently top clock is moving/thinking - proceed in 2 cases:
+                // a) if it's paused by top AND top side pressed his button again
+                // b) top pressed his button
                 if (blackIsThinking) {
                     if (it.isPaused) {
                         //only proceed if before pause it was black thinking
@@ -186,7 +186,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun clickWhiteButton(){
+    override fun clickTopButton(){
         Timber.d("qwer clickOnWhiteButtonView")
         CoroutineScope(Dispatchers.Main).launch {
             game?.let {
@@ -207,9 +207,9 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
                 //define which clock is going
                 var whiteIsThinking = false
-                if (it.isWhiteFirst && it.isFirstPlayerThinking) {//white was first, AND now move of first player -> so, white is whiteIsThinking
+                if (it.isBottomFirst && it.isFirstPlayerThinking) {//white was first, AND now move of first player -> so, white is whiteIsThinking
                     whiteIsThinking = true
-                } else if (!it.isWhiteFirst && !it.isFirstPlayerThinking) {//white was not first, AND now move of not first player -> so, white is whiteIsThinking
+                } else if (!it.isBottomFirst && !it.isFirstPlayerThinking) {//white was not first, AND now move of not first player -> so, white is whiteIsThinking
                     whiteIsThinking = true
                 }
 
@@ -248,10 +248,10 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 //                it.pausedStartMillis = 0L
 
                 changedToPauseIcon.postValue(true)
-                if (whiteButtonBG.value == 2) {//white is paused
-                    whiteButtonBG.postValue(3)//white is thinking
-                } else if (blackButtonBG.value == 2) {//black is paused
-                    blackButtonBG.postValue(3)//black is thinking
+                if (bottomButtonBG.value == 2) {//white is paused
+                    bottomButtonBG.postValue(3)//white is thinking
+                } else if (topButtonBG.value == 2) {//black is paused
+                    topButtonBG.postValue(3)//black is thinking
                 }
             } else {
                 Timber.d("qwer clickOnPause if NOT it.isPaused)")
@@ -264,10 +264,10 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 //it.pausedStartMillis = System.currentTimeMillis()
 
                 changedToPauseIcon.postValue(false)
-                if (whiteButtonBG.value == 3) {//white is thinking
-                    whiteButtonBG.postValue(2)//white is paused
-                } else if (blackButtonBG.value == 3) {//black is thinking
-                    blackButtonBG.postValue(2)//black is paused
+                if (bottomButtonBG.value == 3) {//white is thinking
+                    bottomButtonBG.postValue(2)//white is paused
+                } else if (topButtonBG.value == 3) {//black is thinking
+                    topButtonBG.postValue(2)//black is paused
                 }
             }
         }
@@ -293,12 +293,12 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
             it.isFirstPlayerThinking = !it.isFirstPlayerThinking
         }
 
-        if (whiteButtonBG.value == 3) {//white WAS thinking
-            blackButtonBG.postValue(3)//black is thinking
-            whiteButtonBG.postValue(1)//white is not thinking
-        } else if (blackButtonBG.value == 3) {//black WAS thinking
-            whiteButtonBG.postValue(3)//white is thinking
-            blackButtonBG.postValue(1)//black is not thinking
+        if (bottomButtonBG.value == 3) {//white WAS thinking
+            topButtonBG.postValue(3)//black is thinking
+            bottomButtonBG.postValue(1)//white is not thinking
+        } else if (topButtonBG.value == 3) {//black WAS thinking
+            bottomButtonBG.postValue(3)//white is thinking
+            topButtonBG.postValue(1)//black is not thinking
         }
 
         startTimer()
@@ -312,13 +312,13 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         var isWhiteThinkingCurrently = false
         game?.let {
 
-            if (it.isFirstPlayerThinking && it.isWhiteFirst) {
+            if (it.isFirstPlayerThinking && it.isBottomFirst) {
                 isWhiteThinkingCurrently = true
-            } else if (!it.isFirstPlayerThinking && !it.isWhiteFirst) {
+            } else if (!it.isFirstPlayerThinking && !it.isBottomFirst) {
                 isWhiteThinkingCurrently = true
-            } else if (!it.isFirstPlayerThinking && it.isWhiteFirst) {
+            } else if (!it.isFirstPlayerThinking && it.isBottomFirst) {
                 isWhiteThinkingCurrently = false
-            } else if (it.isFirstPlayerThinking && !it.isWhiteFirst) {
+            } else if (it.isFirstPlayerThinking && !it.isBottomFirst) {
                 isWhiteThinkingCurrently = false
             }
         }
@@ -353,13 +353,13 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
-                        restTimeWhite.postValue(it.whiteRest)
-                        restTimeBlack.postValue(it.blackRest)
+                        restTimeBottom.postValue(it.whiteRest)
+                        restTimeTop.postValue(it.blackRest)
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
-                            restTimeWhite.postValue(it.whiteRest)
-                            restTimeBlack.postValue(it.blackRest)
+                            restTimeBottom.postValue(it.whiteRest)
+                            restTimeTop.postValue(it.blackRest)
                         }
                     }
 
@@ -390,8 +390,8 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 //                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
             if (it.whiteRest < it.blackRest) it.whiteRest = 0L else it.blackRest = 0L
             //refresh
-            restTimeWhite.postValue(it.whiteRest)
-            restTimeBlack.postValue(it.blackRest)
+            restTimeBottom.postValue(it.whiteRest)
+            restTimeTop.postValue(it.blackRest)
         }
 
         timeExpired.postValue(Event(sideWhichExpired))
@@ -407,15 +407,15 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 it.blackRest = it.whiteRest
                 it.isFirstPlayerThinking = false
                 it.isGameFinished = false
-                it.isWhiteFirst = isWhiteFirst
+                it.isBottomFirst = isWhiteFirst
 
-                this.isWhiteFirst.postValue(isWhiteFirst)
+                this.isBottomFirst.postValue(isWhiteFirst)
                 if (isWhiteFirst) {
-                    whiteButtonBG.postValue(1)//white is not thinking
-                    blackButtonBG.postValue(3)//black is thinking
+                    bottomButtonBG.postValue(1)//white is not thinking
+                    topButtonBG.postValue(3)//black is thinking
                 } else {
-                    blackButtonBG.postValue(1)//black is not thinking
-                    whiteButtonBG.postValue(3)//white is thinking
+                    topButtonBG.postValue(1)//black is not thinking
+                    bottomButtonBG.postValue(3)//white is thinking
                 }
 
                 startTimer()
