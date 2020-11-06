@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import com.lumisdinos.chessclock.R
@@ -18,7 +19,6 @@ import com.lumisdinos.chessclock.data.Constants.STARTING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_PAUSING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_THINKING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_WAITING_BG
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,7 +28,7 @@ object BindingAdapters {
     @JvmStatic
     @BindingAdapter("timeControlFromGame")
     fun convertTimeControlFromGame(textView: TextView, timeControlLive: LiveData<String>) {
-        val timeControl = timeControlLive?.value
+        val timeControl = timeControlLive.value
         if (timeControl.isNullOrEmpty()) {
             textView.text = textView.context.getString(R.string.time_control_not_set)
             return
@@ -82,18 +82,18 @@ object BindingAdapters {
     fun convertRestClockTime(textView: TextView, restTimeLive: LiveData<Long>) {
         val restTime = restTimeLive.value ?: 0L
         if (restTime == 0L) {
-            textView.text = "0:00.0"
+            textView.text = textView.context.getString(R.string.default_time)
             return
         }
 
         val str: String
 
         if (restTime < 20_000) {
-            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_DEC).format(Date(restTime))//m:ss.S
+            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_DEC).format(Date(restTime))
         } else if (restTime < 600_000) {
-            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_LESS_10M).format(Date(restTime))//m:ss
+            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT_LESS_10M).format(Date(restTime))
         } else {
-            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT).format(Date(restTime))//mm:ss
+            str = SimpleDateFormat(CLOCK_PLAYER_TIME_FORMAT).format(Date(restTime))
         }
 
         textView.text = str
@@ -108,31 +108,31 @@ object BindingAdapters {
 
         when (buttonBG) {
             STARTING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_gray_button)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_gray_button)
                 imageView.setImageResource(0)
             }
             WHITE_THINKING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_white_thinking)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_white_thinking)
                 imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
             WHITE_WAITING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_white_waiting)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_white_waiting)
                 imageView.setImageResource(0)
             }
             WHITE_PAUSING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_white_paused)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_white_paused)
                 imageView.setImageResource(R.drawable.ic_play_arrow_black_24dp)
             }
             BLACK_THINKING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_black_thinking)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_black_thinking)
                 imageView.setImageResource(R.drawable.chess_paun_176x286)
             }
             BLACK_WAITING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_black_waiting)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_black_waiting)
                 imageView.setImageResource(0)
             }
             BLACK_PAUSING_BG -> {
-                imageView.background = context.getDrawable(R.drawable.border_black_paused)
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_black_paused)
                 imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
             }
         }
@@ -147,16 +147,16 @@ object BindingAdapters {
         val context = textView.context
         if (isBottomFirst) {
             if (tag == "bottom") {
-                textView.setTextColor(context.resources.getColor(R.color.colorBlack))
+                textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlack))
             } else {
-                textView.setTextColor(context.resources.getColor(R.color.colorWhite))
+                textView.setTextColor(ContextCompat.getColor(context, R.color.colorWhite))
             }
 
         } else {
             if (tag == "bottom") {
-                textView.setTextColor(context.resources.getColor(R.color.colorWhite))
+                textView.setTextColor(ContextCompat.getColor(context, R.color.colorWhite))
             } else {
-                textView.setTextColor(context.resources.getColor(R.color.colorBlack))
+                textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlack))
             }
         }
     }
