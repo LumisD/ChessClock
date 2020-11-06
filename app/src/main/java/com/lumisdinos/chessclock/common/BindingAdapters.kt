@@ -82,7 +82,7 @@ object BindingAdapters {
     fun convertRestClockTime(textView: TextView, restTimeLive: LiveData<Long>) {
         val restTime = restTimeLive.value ?: 0L
         if (restTime == 0L) {
-            textView.text = textView.context.getString(R.string.default_time)
+            textView.text = context.getString(R.string.default_time)
             return
         }
 

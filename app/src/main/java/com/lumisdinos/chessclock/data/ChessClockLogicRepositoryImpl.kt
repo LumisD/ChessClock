@@ -1,4 +1,4 @@
-package com.lumisdinos.chessclock.data.repository
+package com.lumisdinos.chessclock.data
 
 import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +12,8 @@ import com.lumisdinos.chessclock.data.Constants.WHITE_PAUSING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_THINKING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_WAITING_BG
 import com.lumisdinos.chessclock.data.model.Game
+import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepository
+import com.lumisdinos.chessclock.data.repository.GameRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

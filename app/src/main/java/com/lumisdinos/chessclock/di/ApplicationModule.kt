@@ -6,9 +6,9 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import com.lumisdinos.chessclock.data.Database
 import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepository
-import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepositoryImpl
+import com.lumisdinos.chessclock.data.ChessClockLogicRepositoryImpl
 import com.lumisdinos.chessclock.data.repository.GameRepository
-import com.lumisdinos.chessclock.data.repository.GameRepositoryImpl
+import com.lumisdinos.chessclock.data.GameRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

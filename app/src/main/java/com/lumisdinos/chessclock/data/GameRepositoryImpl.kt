@@ -1,8 +1,7 @@
-package com.lumisdinos.chessclock.data.repository
+package com.lumisdinos.chessclock.data
 
-import com.lumisdinos.chessclock.data.AppConfig
-import com.lumisdinos.chessclock.data.DaoDB
 import com.lumisdinos.chessclock.data.model.Game
+import com.lumisdinos.chessclock.data.repository.GameRepository
 import timber.log.Timber
 import javax.inject.Inject
 

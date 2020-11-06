@@ -6,8 +6,6 @@ import com.lumisdinos.chessclock.data.model.Game
 @Dao
 interface DaoDB {
 
-    //Game
-
     @Query("SELECT COUNT(*) FROM game")
     fun getGameCount(): Int
 

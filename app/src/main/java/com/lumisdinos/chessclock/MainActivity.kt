@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity(), DialogListener {
 
     private val ACTION_SET_CUSTOM_TIME = "100"
 
-    //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var viewDataBinding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var navigationView: NavigationView
@@ -76,27 +75,15 @@ class MainActivity : AppCompatActivity(), DialogListener {
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        appBarConfiguration = AppBarConfiguration(setOf(
-//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
-//        setupActionBarWithNavController(navController, appBarConfiguration)
         navigationView.setupWithNavController(navController)
         initializeMenuItemsAndSetListeners()
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
-
-
-//    override fun onSupportNavigateUp(): Boolean {
-//        val navController = findNavController(R.id.navHostFragment)
-//        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-//    }
 
 
     private fun initializeMenuItemsAndSetListeners() {
@@ -134,80 +121,67 @@ class MainActivity : AppCompatActivity(), DialogListener {
         }
 
         time_15_10MenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time15_10MenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _15_10)
             true
         }
         time_5_5MenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_5_5MenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _5_5)
             true
         }
         time_3_2MenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_3_2MenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _3_2)
             true
         }
         time_2_1MenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_2_1MenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _2_1)
             true
         }
         time_1_1MenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_1_1MenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _1_1)
             true
         }
         time_45_45MenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_45_45MenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _45_45)
             true
         }
 
         time_60minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_60minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _60)
             true
         }
         time_30minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time30minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _30)
             true
         }
         time_20minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_20minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _20)
             true
         }
         time_10minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_10minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _10)
             true
         }
         time_5minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_5minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _5)
             true
         }
         time_3minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_3minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _3)
             true
         }
         time_1minMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer time_1minMenuItem tOnMenuItemClick")
             drawerLayout.close()
             refreshSomeFragment(navController.currentDestination, _1)
             true
@@ -230,14 +204,13 @@ class MainActivity : AppCompatActivity(), DialogListener {
             if (index == -1) return
             val name = displayName.substring(index + 1)
             if (getString(R.string.nav_home).equals(name, ignoreCase = true)) {
-                //refresh list row20
                 val homeFragment = getCurrentFragment()
                 if (homeFragment != null && homeFragment is HomeFragment) {
                     homeFragment.setChosenTimeControl(time)
                 }
             }
         } catch (e: Exception) {
-            Timber.d("qwer Exception: %s", e.message)
+            Timber.d("Exception: %s", e.message)
         }
     }
 
@@ -255,7 +228,6 @@ class MainActivity : AppCompatActivity(), DialogListener {
     //  -- DialogListener --
 
     override fun onPositiveDialogClick(result: List<String>) {
-        Timber.d("qwer onPositiveDialogClick action: %s", result[0])
         when(result[0]) {
             ACTION_SET_CUSTOM_TIME -> {
                 refreshSomeFragment(navController.currentDestination, result[1])
