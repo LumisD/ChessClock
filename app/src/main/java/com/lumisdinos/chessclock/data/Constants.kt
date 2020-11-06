@@ -19,6 +19,14 @@ object Constants {
     const val _3 = "3, 0, 0"       //3m
     const val _1 = "1, 0, 0"      //1m
 
+    const val STARTING_BG = "starting_bg"
+    const val WHITE_THINKING_BG = "white_thinking_bg"
+    const val WHITE_WAITING_BG = "white_waiting_bg"
+    const val WHITE_PAUSING_BG = "white_pausing_bg"
+    const val BLACK_THINKING_BG = "black_thinking_bg"
+    const val BLACK_WAITING_BG = "black_waiting_bg"
+    const val BLACK_PAUSING_BG = "black_pausing_bg"
+
     val CLOCK_PLAYER_TIME_FORMAT = "mm:ss"
     val CLOCK_PLAYER_TIME_FORMAT_LESS_10M = "m:ss"
     val CLOCK_PLAYER_TIME_FORMAT_DEC = "m:ss.S"

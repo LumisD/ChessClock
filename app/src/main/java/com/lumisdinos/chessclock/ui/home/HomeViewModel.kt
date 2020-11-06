@@ -18,9 +18,9 @@ class HomeViewModel @Inject constructor(
     val changedToPauseIcon: LiveData<Boolean> = logicRepo.changedToPauseIcon
     val restTimeBottom: LiveData<Long> = logicRepo.restTimeBottom
     val restTimeTop: LiveData<Long> = logicRepo.restTimeTop
-    var isBottomFirst: LiveData<Boolean> = logicRepo.isBottomFirst
-    val topButtonBG: LiveData<Int> = logicRepo.topButtonBG
-    val bottomButtonBG: LiveData<Int> = logicRepo.bottomButtonBG
+    var isBottomPressedFirst: LiveData<Boolean> = logicRepo.isBottomPressedFirst
+    val topButtonBG: LiveData<String> = logicRepo.topButtonBG
+    val bottomButtonBG: LiveData<String> = logicRepo.bottomButtonBG
 
     val moveSound: LiveData<Event<Boolean>> = logicRepo.moveSound
     val timeExpired: LiveData<Event<String>> = logicRepo.timeExpired
@@ -42,12 +42,12 @@ class HomeViewModel @Inject constructor(
 
 
     fun clickOnTopButtonView() {
-        logicRepo.clickBottomButton()
+        logicRepo.clickMoveButton(false)
     }
 
 
     fun clickOnBottomButtonView() {
-        logicRepo.clickTopButton()
+        logicRepo.clickMoveButton(true)
     }
 
 

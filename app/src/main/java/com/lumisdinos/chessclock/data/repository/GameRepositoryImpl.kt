@@ -42,7 +42,7 @@ class GameRepositoryImpl @Inject constructor(
         game?.let {
             it.systemMillis = 0L
             it.isBottomFirst = true
-            it.isFirstPlayerThinking = true
+            it.isWhitePlayerThinking = true
             it.isPaused = false
             it.isGameFinished = false
 

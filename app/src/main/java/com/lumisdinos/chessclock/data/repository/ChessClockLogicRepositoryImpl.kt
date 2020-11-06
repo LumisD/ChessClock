@@ -4,6 +4,13 @@ import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import com.lumisdinos.chessclock.common.Event
 import com.lumisdinos.chessclock.common.utils.strToInt
+import com.lumisdinos.chessclock.data.Constants.BLACK_PAUSING_BG
+import com.lumisdinos.chessclock.data.Constants.BLACK_THINKING_BG
+import com.lumisdinos.chessclock.data.Constants.BLACK_WAITING_BG
+import com.lumisdinos.chessclock.data.Constants.STARTING_BG
+import com.lumisdinos.chessclock.data.Constants.WHITE_PAUSING_BG
+import com.lumisdinos.chessclock.data.Constants.WHITE_THINKING_BG
+import com.lumisdinos.chessclock.data.Constants.WHITE_WAITING_BG
 import com.lumisdinos.chessclock.data.model.Game
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +27,9 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     override var changedToPauseIcon = MutableLiveData<Boolean>()
     override var restTimeBottom = MutableLiveData<Long>()
     override var restTimeTop = MutableLiveData<Long>()
-    override var isBottomFirst = MutableLiveData<Boolean>()//pressed first bottomButtonView or topButtonView
-    override var topButtonBG = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
-    override var bottomButtonBG = MutableLiveData<Int>()//0 - starting(no pressed); 1 - is not thinking; 2 - is paused; 3 - thinking
+    override var isBottomPressedFirst = MutableLiveData<Boolean>()//pressed first bottomButtonView or topButtonView
+    override var topButtonBG = MutableLiveData<String>()
+    override var bottomButtonBG = MutableLiveData<String>()
 
     override var timeExpired = MutableLiveData<Event<String>>()
     override var moveSound = MutableLiveData<Event<Boolean>>()
@@ -36,50 +43,19 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
             withContext(Dispatchers.IO) {
                 game = gameRepository.getFirstGame()
                 game?.let {
-                    Timber.d("qwer getGame: %s", game)
-
-                    //set live vars
-                    restTimeBottom.postValue(it.whiteRest)
-                    restTimeTop.postValue(it.blackRest)
+                    Timber.d("qwer createGame: %s", game)
 
                     if (it.systemMillis > 0) {//only consider this if a game is not new
-                        if (it.isBottomFirst) {//bottomButton goes first
-                            if (it.isFirstPlayerThinking) {//bottomButton first AND white is thinking
-                                if (it.isPaused) {
-                                    bottomButtonBG.postValue(2)//paused
-                                } else {
-                                    bottomButtonBG.postValue(3)//thinking
-                                }
-                                topButtonBG.postValue(1)//not thinking
-                            } else {//bottomButton first AND black is moving
-                                if (it.isPaused) {
-                                    topButtonBG.postValue(2)//paused
-                                } else {
-                                    topButtonBG.postValue(3)//thinking
-                                }
-                                bottomButtonBG.postValue(1)//not thinking
-                            }
-                        } else {//blackButton goes first
-                            if (it.isFirstPlayerThinking) {//topButton first AND black is thinking
-                                if (it.isPaused) {
-                                    topButtonBG.postValue(2)//paused
-                                } else {
-                                    topButtonBG.postValue(3)//thinking
-                                }
-                                bottomButtonBG.postValue(3)//not thinking
-                            } else {//topButton first AND white is moving
-                                if (it.isPaused) {
-                                    bottomButtonBG.postValue(2)//paused
-                                } else {
-                                    bottomButtonBG.postValue(3)//thinking
-                                }
-                                topButtonBG.postValue(1)//not thinking
-                            }
-                        }
+                        setButtonBg()
                     }
 
+                    val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
+                    val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
 
-                    isBottomFirst.postValue(it.isBottomFirst)
+                    //set live vars
+                    restTimeBottom.postValue(bottomTime)
+                    restTimeTop.postValue(topTime)
+                    isBottomPressedFirst.postValue(it.isBottomFirst)
 
                     if (it.isPaused) {
                         changedToPauseIcon.postValue(false)
@@ -127,11 +103,14 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
                     gameRepository.resetGame(game)
 
+                    val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
+                    val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
+
                     timeControl.postValue("${it.min}, ${it.sec}, ${it.inc}")
-                    restTimeBottom.postValue(it.whiteRest)
-                    restTimeTop.postValue(it.blackRest)
-                    bottomButtonBG.postValue(0)//starting(no pressed)
-                    topButtonBG.postValue(0)//starting(no pressed)
+                    restTimeBottom.postValue(bottomTime)
+                    restTimeTop.postValue(topTime)
+                    bottomButtonBG.postValue(STARTING_BG)
+                    topButtonBG.postValue(STARTING_BG)
 
                     changedToPauseIcon.postValue(true)
                 }
@@ -141,8 +120,8 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun clickBottomButton(){
-        Timber.d("qwer clickOnBlackButtonView")
+    override fun clickMoveButton(isBottomPressed: Boolean) {
+        Timber.d("qwer clickMoveButton isBottomPressed: %s", isBottomPressed)
         CoroutineScope(Dispatchers.Main).launch {
             game?.let {
                 if (it.isGameFinished) {
@@ -150,79 +129,28 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 }
             }
 
-            var isTheFirstMove = false
-            if (game == null) return@launch
-            isTheFirstMove = startFirstMove(false)
-            if (isTheFirstMove) {
+            if (isStartFirstMove(isBottomPressed)) {
                 moveSound.postValue(Event(true))
                 return@launch
             }
 
             game?.let {
 
-                //define which clock is going
-                var blackIsThinking = false
-                if (it.isBottomFirst && !it.isFirstPlayerThinking) {//bottom was first, but now not his move -> so, top is thinking
-                    blackIsThinking = true
-                } else if (!it.isBottomFirst && it.isFirstPlayerThinking) {//bottom was not first, but now move of first player -> so, top is thinking
-                    blackIsThinking = true
+                var bottomIsThinking = false
+
+                if (it.isBottomFirst && it.isWhitePlayerThinking) {
+                    bottomIsThinking = true
+                } else if (!it.isBottomFirst && !it.isWhitePlayerThinking) {
+                    bottomIsThinking = true
                 }
 
-                //if currently top clock is moving/thinking - proceed in 2 cases:
-                // a) if it's paused by top AND top side pressed his button again
-                // b) top pressed his button
-                if (blackIsThinking) {
+                if (bottomIsThinking && isBottomPressed ||
+                    !bottomIsThinking && !isBottomPressed) {
                     if (it.isPaused) {
-                        //only proceed if before pause it was black thinking
                         clickPause()
                     } else {
                         moveSound.postValue(Event(true))
-                        handleNewMove(false)
-                    }
-                    return@launch
-                }
-            }
-        }
-    }
-
-
-    override fun clickTopButton(){
-        Timber.d("qwer clickOnWhiteButtonView")
-        CoroutineScope(Dispatchers.Main).launch {
-            game?.let {
-                if (it.isGameFinished) {
-                    return@launch
-                }
-            }
-
-            var isTheFirstMove = false
-            if (game == null) return@launch
-            isTheFirstMove = startFirstMove(true)
-            if (isTheFirstMove) {
-                moveSound.postValue(Event(true))
-                return@launch
-            }
-
-            game?.let {
-
-                //define which clock is going
-                var whiteIsThinking = false
-                if (it.isBottomFirst && it.isFirstPlayerThinking) {//white was first, AND now move of first player -> so, white is whiteIsThinking
-                    whiteIsThinking = true
-                } else if (!it.isBottomFirst && !it.isFirstPlayerThinking) {//white was not first, AND now move of not first player -> so, white is whiteIsThinking
-                    whiteIsThinking = true
-                }
-
-                //if currently white clock is moving/thinking - proceed in 2 cases:
-                // a) if it's paused by white AND white side pressed his button again
-                // b) white pressed his button
-                if (whiteIsThinking) {
-                    if (it.isPaused) {
-                        //only proceed if before pause it was white moving
-                        clickPause()
-                    } else {
-                        moveSound.postValue(Event(true))
-                        handleNewMove(true)
+                        handleNewMove()
                     }
                     return@launch
                 }
@@ -248,11 +176,6 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 //                it.pausedStartMillis = 0L
 
                 changedToPauseIcon.postValue(true)
-                if (bottomButtonBG.value == 2) {//white is paused
-                    bottomButtonBG.postValue(3)//white is thinking
-                } else if (topButtonBG.value == 2) {//black is paused
-                    topButtonBG.postValue(3)//black is thinking
-                }
             } else {
                 Timber.d("qwer clickOnPause if NOT it.isPaused)")
                 //pause time
@@ -264,25 +187,19 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 //it.pausedStartMillis = System.currentTimeMillis()
 
                 changedToPauseIcon.postValue(false)
-                if (bottomButtonBG.value == 3) {//white is thinking
-                    bottomButtonBG.postValue(2)//white is paused
-                } else if (topButtonBG.value == 3) {//black is thinking
-                    topButtonBG.postValue(2)//black is paused
-                }
             }
+
+            setButtonBg()
         }
     }
 
 
-
-
-
-    private fun handleNewMove(isWhiteMovingCurrently: Boolean) {
-        Timber.d("qwer handleNewMove isWhiteMovingCurrently: %s", isWhiteMovingCurrently)
+    private fun handleNewMove() {
         game?.let {
+            Timber.d("qwer handleNewMove isWhitePlayerThinking: %s", it.isWhitePlayerThinking)
             //add increment
             if (it.inc > 0) {
-                if (isWhiteMovingCurrently) {
+                if (it.isWhitePlayerThinking) {
                     it.whiteRest += it.inc * 1000
                 } else {
                     it.blackRest += it.inc * 1000
@@ -290,17 +207,10 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
             }
 
             it.systemMillis = System.currentTimeMillis()
-            it.isFirstPlayerThinking = !it.isFirstPlayerThinking
+            it.isWhitePlayerThinking = !it.isWhitePlayerThinking
         }
 
-        if (bottomButtonBG.value == 3) {//white WAS thinking
-            topButtonBG.postValue(3)//black is thinking
-            bottomButtonBG.postValue(1)//white is not thinking
-        } else if (topButtonBG.value == 3) {//black WAS thinking
-            bottomButtonBG.postValue(3)//white is thinking
-            topButtonBG.postValue(1)//black is not thinking
-        }
-
+        setButtonBg()
         startTimer()
     }
 
@@ -309,26 +219,26 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         timer?.let { it.cancel() }
         timer = null
 
-        var isWhiteThinkingCurrently = false
+        //var isBottomThinkingCurrently = false
+        var millFuture = 0L
         game?.let {
 
-            if (it.isFirstPlayerThinking && it.isBottomFirst) {
-                isWhiteThinkingCurrently = true
-            } else if (!it.isFirstPlayerThinking && !it.isBottomFirst) {
-                isWhiteThinkingCurrently = true
-            } else if (!it.isFirstPlayerThinking && it.isBottomFirst) {
-                isWhiteThinkingCurrently = false
-            } else if (it.isFirstPlayerThinking && !it.isBottomFirst) {
-                isWhiteThinkingCurrently = false
-            }
-        }
-
-        val millFuture = if (isWhiteThinkingCurrently) game!!.whiteRest else game!!.blackRest
-
-        var ticks = 0
-        game?.let {
+//            if (it.isWhitePlayerThinking && it.isBottomFirst) {
+//                isBottomThinkingCurrently = true
+//            } else if (!it.isWhitePlayerThinking && !it.isBottomFirst) {
+//                isBottomThinkingCurrently = true
+//            }
+//            else if (!it.isWhitePlayerThinking && it.isBottomFirst) {
+//                isBottomThinkingCurrently = false
+//            } else if (it.isWhitePlayerThinking && !it.isBottomFirst) {
+//                isBottomThinkingCurrently = false
+//            }
+            millFuture = if (it.isWhitePlayerThinking) it.whiteRest else it.blackRest
             it.tickSystemMillis = 0
         }
+
+
+        var ticks = 0
 
         timer = object : CountDownTimer(millFuture, 100) {
             override fun onTick(millisUntilFinished: Long) {
@@ -340,7 +250,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     }
 
 
-                    if (isWhiteThinkingCurrently) {
+                    if (it.isWhitePlayerThinking) {
                         it.whiteRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.whiteRest < 0L) it.whiteRest = 0L
                         restTime = it.whiteRest
@@ -350,16 +260,19 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                         restTime = it.blackRest
                     }
 
+                    val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
+                    val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
+
                     //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
-                        restTimeBottom.postValue(it.whiteRest)
-                        restTimeTop.postValue(it.blackRest)
+                        restTimeBottom.postValue(bottomTime)
+                        restTimeTop.postValue(topTime)
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
-                            restTimeBottom.postValue(it.whiteRest)
-                            restTimeTop.postValue(it.blackRest)
+                            restTimeBottom.postValue(bottomTime)
+                            restTimeTop.postValue(topTime)
                         }
                     }
 
@@ -382,41 +295,39 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         game?.let {
             //define which side expired: who started
             it.isGameFinished = true
-            if (it.isFirstPlayerThinking) {
+            if (it.isWhitePlayerThinking) {
                 sideWhichExpired = "white"
-            } else if (!it.isFirstPlayerThinking) {
+            } else if (!it.isWhitePlayerThinking) {
                 sideWhichExpired = "black"
             }
 //                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
             if (it.whiteRest < it.blackRest) it.whiteRest = 0L else it.blackRest = 0L
             //refresh
-            restTimeBottom.postValue(it.whiteRest)
-            restTimeTop.postValue(it.blackRest)
+            val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
+            val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
+            restTimeBottom.postValue(bottomTime)
+            restTimeTop.postValue(topTime)
         }
 
         timeExpired.postValue(Event(sideWhichExpired))
     }
 
 
-    private fun startFirstMove(isWhiteFirst: Boolean): Boolean {
+    private fun isStartFirstMove(isBottomFirst: Boolean): Boolean {
         game?.let {
             if (it.systemMillis == 0L) {
                 //the game is not started yet
                 it.systemMillis = System.currentTimeMillis()
                 it.whiteRest = (it.min * 60 + it.sec) * 1000L
                 it.blackRest = it.whiteRest
-                it.isFirstPlayerThinking = false
+                it.isWhitePlayerThinking = false
                 it.isGameFinished = false
-                it.isBottomFirst = isWhiteFirst
+                it.isBottomFirst = isBottomFirst
+                it.isPaused = false
 
-                this.isBottomFirst.postValue(isWhiteFirst)
-                if (isWhiteFirst) {
-                    bottomButtonBG.postValue(1)//white is not thinking
-                    topButtonBG.postValue(3)//black is thinking
-                } else {
-                    topButtonBG.postValue(1)//black is not thinking
-                    bottomButtonBG.postValue(3)//white is thinking
-                }
+                this.isBottomPressedFirst.postValue(isBottomFirst)
+                setButtonBg()
+                Timber.d("qwer isStartFirstMove isBottomFirst: %s,  isWhitePlayerThinking: %s", isBottomFirst, it.isWhitePlayerThinking)
 
                 startTimer()
 
@@ -425,6 +336,62 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         }
 
         return false
+    }
+
+
+    private fun setButtonBg() {
+        game?.let {
+
+            //bottom button is white
+            if (it.isBottomFirst && it.isWhitePlayerThinking && it.isPaused) {
+                bottomButtonBG.postValue(WHITE_PAUSING_BG)
+                topButtonBG.postValue(BLACK_WAITING_BG)
+                return
+            }
+
+            if (it.isBottomFirst && it.isWhitePlayerThinking && !it.isPaused) {
+                bottomButtonBG.postValue(WHITE_THINKING_BG)
+                topButtonBG.postValue(BLACK_WAITING_BG)
+                return
+            }
+
+            if (it.isBottomFirst && !it.isWhitePlayerThinking && it.isPaused) {
+                bottomButtonBG.postValue(WHITE_WAITING_BG)
+                topButtonBG.postValue(BLACK_PAUSING_BG)
+                return
+            }
+
+            if (it.isBottomFirst && !it.isWhitePlayerThinking && !it.isPaused) {
+                bottomButtonBG.postValue(WHITE_WAITING_BG)
+                topButtonBG.postValue(BLACK_THINKING_BG)
+                return
+            }
+
+            //top button is white
+            if (!it.isBottomFirst && it.isWhitePlayerThinking && it.isPaused) {
+                bottomButtonBG.postValue(BLACK_WAITING_BG)
+                topButtonBG.postValue(WHITE_PAUSING_BG)
+                return
+            }
+
+            if (!it.isBottomFirst && it.isWhitePlayerThinking && !it.isPaused) {
+                bottomButtonBG.postValue(BLACK_WAITING_BG)
+                topButtonBG.postValue(WHITE_THINKING_BG)
+                return
+            }
+
+            if (!it.isBottomFirst && !it.isWhitePlayerThinking && it.isPaused) {
+                bottomButtonBG.postValue(BLACK_PAUSING_BG)
+                topButtonBG.postValue(WHITE_WAITING_BG)
+                return
+            }
+
+            if (!it.isBottomFirst && !it.isWhitePlayerThinking && !it.isPaused) {
+                bottomButtonBG.postValue(BLACK_THINKING_BG)
+                topButtonBG.postValue(WHITE_WAITING_BG)
+                return
+            }
+        }
     }
 
 }

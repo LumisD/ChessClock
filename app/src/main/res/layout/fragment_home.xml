@@ -18,7 +18,7 @@
         tools:context=".ui.home.HomeFragment">
 
         <ImageView
-            android:id="@+id/blackButtonView"
+            android:id="@+id/topButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clickable="true"
@@ -26,10 +26,8 @@
             android:foreground="@drawable/ripple"
             android:onClick="@{() -> viewModel.clickOnTopButtonView()}"
             android:padding="@dimen/space_xxlarge"
-            android:tag="black"
             android:rotation="180"
-            app:topButtonsBG="@{viewModel.topButtonBG}"
-            app:isBottomFirst="@{viewModel.isBottomFirst}"
+            app:buttonsBG="@{viewModel.topButtonBG}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,19 +35,19 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/blackTimeTv"
+            android:id="@+id/topTimeTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_small"
             android:rotation="180"
-            android:tag="black"
+            android:tag="top"
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:buttonTextColor="@{viewModel.isBottomFirst}"
+            app:buttonTextColor="@{viewModel.isBottomPressedFirst}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/blackButtonView"
+            app:layout_constraintTop_toTopOf="@+id/topButtonView"
             app:restClockTime="@{viewModel.restTimeTop}" />
 
 
@@ -120,7 +118,7 @@
 
 
         <ImageView
-            android:id="@+id/whiteButtonView"
+            android:id="@+id/bottomButtonView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clickable="true"
@@ -128,13 +126,11 @@
             android:foreground="@drawable/ripple"
             android:onClick="@{() -> viewModel.clickOnBottomButtonView()}"
             android:padding="@dimen/space_xxlarge"
-            android:tag="white"
-            app:isBottomFirst="@{viewModel.isBottomFirst}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guidelineDown"
-            app:bottomButtonsBG="@{viewModel.bottomButtonBG}"
+            app:buttonsBG="@{viewModel.bottomButtonBG}"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -142,12 +138,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/space_small"
-            android:tag="white"
+            android:tag="bottom"
             android:textColor="@color/colorBlack"
             android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:buttonTextColor="@{viewModel.isBottomFirst}"
-            app:layout_constraintBottom_toBottomOf="@+id/whiteButtonView"
+            app:buttonTextColor="@{viewModel.isBottomPressedFirst}"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomButtonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:restClockTime="@{viewModel.restTimeBottom}" />
