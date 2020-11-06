@@ -64,11 +64,9 @@ class MainActivity : AppCompatActivity(), DialogListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewDataBinding =
-            DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        viewDataBinding.lifecycleOwner = this
+        viewDataBinding = ActivityMainBinding.inflate(layoutInflater)
 
-        navigationView = viewDataBinding.root.findViewById(R.id.nav_view)
+        navigationView = viewDataBinding.navView
         drawerLayout = viewDataBinding.drawerLayout
 
         val navHostFragment =
@@ -77,6 +75,9 @@ class MainActivity : AppCompatActivity(), DialogListener {
 
         navigationView.setupWithNavController(navController)
         initializeMenuItemsAndSetListeners()
+
+        val view = viewDataBinding.root
+        setContentView(view)
     }
 
 

@@ -4,10 +4,9 @@ import android.app.AlertDialog
 import android.content.Context
 import android.text.InputFilter
 import android.view.LayoutInflater
-import android.widget.*
-import com.lumisdinos.chessclock.R
 import com.lumisdinos.chessclock.common.utils.InputFilterMinMax
 import com.lumisdinos.chessclock.common.utils.strToInt
+import com.lumisdinos.chessclock.databinding.AlertDialogSetTimeBinding
 
 fun getAlertDialogFull(
     context: Context,
@@ -66,22 +65,19 @@ fun alertDialogToSetCustomTime(
     btnNeutral: String
 ): AlertDialog {
 
-    val view = inflater.inflate(R.layout.alert_dialog_set_time, null)
-    val minEt = view.findViewById<EditText>(R.id.minEt)
-    val secEt = view.findViewById<EditText>(R.id.secEt)
-    val incEt = view.findViewById<EditText>(R.id.incEt)
-    secEt.filters = arrayOf<InputFilter>(InputFilterMinMax(0.toFloat(), 59.toFloat()))
+    val binding = AlertDialogSetTimeBinding.inflate(inflater)
+    binding.secEt.filters = arrayOf<InputFilter>(InputFilterMinMax(0.toFloat(), 59.toFloat()))
 
     val builder = AlertDialog.Builder(context)
     with(builder)
     {
         setTitle(title)
         setMessage(message)
-        setView(view)
+        setView(binding.root)
         setPositiveButton(btnPositive) { _, id ->
-            val min = strToInt(minEt.text.toString())
-            val sec = strToInt(secEt.text.toString())
-            val inc = strToInt(incEt.text.toString())
+            val min = strToInt(binding.minEt.text.toString())
+            val sec = strToInt(binding.secEt.text.toString())
+            val inc = strToInt(binding.incEt.text.toString())
             val timeControl = "$min, $sec, $inc"
             listener.onPositiveDialogClick(
                 listOf(action, timeControl)
