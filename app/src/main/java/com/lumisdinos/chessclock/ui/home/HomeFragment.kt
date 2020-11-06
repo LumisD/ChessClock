@@ -88,7 +88,6 @@ class HomeFragment : DaggerFragment(), DialogListener {
             mp.start()
 
             mp.setOnCompletionListener(OnCompletionListener {
-                Timber.d("qwer mp.release")
                 mp.release()
             })
         }
@@ -114,13 +113,6 @@ class HomeFragment : DaggerFragment(), DialogListener {
     //  -- DialogListener --
 
     override fun onPositiveDialogClick(result: List<String>) {
-        Timber.d("qwer onPositiveDialogClick action: %s", result[0])
-        when (result[0]) {
-            ACTION_TIME_EXPIRED -> {
-            }
-            else -> {
-            }
-        }
     }
 
     override fun onNegativeDialogClick(result: List<String>) {

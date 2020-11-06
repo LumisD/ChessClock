@@ -18,6 +18,7 @@ import com.lumisdinos.chessclock.data.Constants.STARTING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_PAUSING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_THINKING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_WAITING_BG
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 class ChessClockLogicRepositoryImpl @Inject constructor(
@@ -27,7 +26,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     override var changedToPauseIcon = MutableLiveData<Boolean>()
     override var restTimeBottom = MutableLiveData<Long>()
     override var restTimeTop = MutableLiveData<Long>()
-    override var isBottomPressedFirst = MutableLiveData<Boolean>()//pressed first bottomButtonView or topButtonView
+    override var isBottomPressedFirst = MutableLiveData<Boolean>()
     override var topButtonBG = MutableLiveData<String>()
     override var bottomButtonBG = MutableLiveData<String>()
 
@@ -43,16 +42,11 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
             withContext(Dispatchers.IO) {
                 game = gameRepository.getFirstGame()
                 game?.let {
-                    Timber.d("qwer createGame: %s", game)
-
-                    if (it.systemMillis > 0) {//only consider this if a game is not new
-                        setButtonBg()
-                    }
+                    setButtonBg(it.systemMillis == 0L)
 
                     val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
                     val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
 
-                    //set live vars
                     restTimeBottom.postValue(bottomTime)
                     restTimeTop.postValue(topTime)
                     isBottomPressedFirst.postValue(it.isBottomFirst)
@@ -64,7 +58,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     }
 
                     timeControl.postValue("${it.min}, ${it.sec}, ${it.inc}")
-                }//game?.let
+                }
 
             }
 
@@ -78,7 +72,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun saveGame(){
+    override fun saveGame() {
         CoroutineScope(Dispatchers.Main).launch {
             withContext(Dispatchers.IO) {
                 gameRepository.insertIfNotEmptyTime(game)
@@ -87,7 +81,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun setChosenTimeControl(timeCtrl: String){
+    override fun setChosenTimeControl(timeCtrl: String) {
         //"15, 0, 10"
         CoroutineScope(Dispatchers.Main).launch {
             timer?.let { it.cancel() }
@@ -109,8 +103,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     timeControl.postValue("${it.min}, ${it.sec}, ${it.inc}")
                     restTimeBottom.postValue(bottomTime)
                     restTimeTop.postValue(topTime)
-                    bottomButtonBG.postValue(STARTING_BG)
-                    topButtonBG.postValue(STARTING_BG)
+                    setButtonBg(true)
 
                     changedToPauseIcon.postValue(true)
                 }
@@ -121,7 +114,6 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
 
     override fun clickMoveButton(isBottomPressed: Boolean) {
-        Timber.d("qwer clickMoveButton isBottomPressed: %s", isBottomPressed)
         CoroutineScope(Dispatchers.Main).launch {
             game?.let {
                 if (it.isGameFinished) {
@@ -129,7 +121,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 }
             }
 
-            if (isStartFirstMove(isBottomPressed)) {
+            if (isStartingFirstMove(isBottomPressed)) {
                 moveSound.postValue(Event(true))
                 return@launch
             }
@@ -145,7 +137,8 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 }
 
                 if (bottomIsThinking && isBottomPressed ||
-                    !bottomIsThinking && !isBottomPressed) {
+                    !bottomIsThinking && !isBottomPressed
+                ) {
                     if (it.isPaused) {
                         clickPause()
                     } else {
@@ -159,25 +152,18 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun clickPause(){
+    override fun clickPause() {
         game?.let {
             if (it.isGameFinished) {
                 return
             }
 
             if (it.isPaused) {
-                Timber.d("qwer clickOnPause if (it.isPaused)")
                 //start again
                 it.isPaused = false
                 startTimer()
-                //add paused time
-//                val pausedTime = System.currentTimeMillis() - it.pausedStartMillis
-//                it.pausedMillis += pausedTime
-//                it.pausedStartMillis = 0L
-
                 changedToPauseIcon.postValue(true)
             } else {
-                Timber.d("qwer clickOnPause if NOT it.isPaused)")
                 //pause time
                 timer?.let {
                     it.cancel()
@@ -196,7 +182,6 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
     private fun handleNewMove() {
         game?.let {
-            Timber.d("qwer handleNewMove isWhitePlayerThinking: %s", it.isWhitePlayerThinking)
             //add increment
             if (it.inc > 0) {
                 if (it.isWhitePlayerThinking) {
@@ -219,20 +204,8 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         timer?.let { it.cancel() }
         timer = null
 
-        //var isBottomThinkingCurrently = false
         var millFuture = 0L
         game?.let {
-
-//            if (it.isWhitePlayerThinking && it.isBottomFirst) {
-//                isBottomThinkingCurrently = true
-//            } else if (!it.isWhitePlayerThinking && !it.isBottomFirst) {
-//                isBottomThinkingCurrently = true
-//            }
-//            else if (!it.isWhitePlayerThinking && it.isBottomFirst) {
-//                isBottomThinkingCurrently = false
-//            } else if (it.isWhitePlayerThinking && !it.isBottomFirst) {
-//                isBottomThinkingCurrently = false
-//            }
             millFuture = if (it.isWhitePlayerThinking) it.whiteRest else it.blackRest
             it.tickSystemMillis = 0
         }
@@ -249,13 +222,14 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                         it.tickSystemMillis = System.currentTimeMillis() - 4
                     }
 
-
                     if (it.isWhitePlayerThinking) {
-                        it.whiteRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
+                        it.whiteRest =
+                            millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.whiteRest < 0L) it.whiteRest = 0L
                         restTime = it.whiteRest
                     } else {
-                        it.blackRest = millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
+                        it.blackRest =
+                            millFuture - (System.currentTimeMillis() - it.tickSystemMillis)
                         if (it.blackRest < 0L) it.blackRest = 0L
                         restTime = it.blackRest
                     }
@@ -263,7 +237,6 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
                     val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
 
-                    //refresh
                     if (restTime < 20_000) {
                         //refresh every 100ms
                         restTimeBottom.postValue(bottomTime)
@@ -293,16 +266,15 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         var sideWhichExpired = "white"
 
         game?.let {
-            //define which side expired: who started
             it.isGameFinished = true
             if (it.isWhitePlayerThinking) {
                 sideWhichExpired = "white"
             } else if (!it.isWhitePlayerThinking) {
                 sideWhichExpired = "black"
             }
-//                    //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
+            //set to 0 rest time as sometimes there is mistake and time is shown 0:00.2 when it is expired
             if (it.whiteRest < it.blackRest) it.whiteRest = 0L else it.blackRest = 0L
-            //refresh
+
             val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
             val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
             restTimeBottom.postValue(bottomTime)
@@ -313,10 +285,9 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    private fun isStartFirstMove(isBottomFirst: Boolean): Boolean {
+    private fun isStartingFirstMove(isBottomFirst: Boolean): Boolean {
         game?.let {
             if (it.systemMillis == 0L) {
-                //the game is not started yet
                 it.systemMillis = System.currentTimeMillis()
                 it.whiteRest = (it.min * 60 + it.sec) * 1000L
                 it.blackRest = it.whiteRest
@@ -327,8 +298,6 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
                 this.isBottomPressedFirst.postValue(isBottomFirst)
                 setButtonBg()
-                Timber.d("qwer isStartFirstMove isBottomFirst: %s,  isWhitePlayerThinking: %s", isBottomFirst, it.isWhitePlayerThinking)
-
                 startTimer()
 
                 return true
@@ -339,8 +308,14 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     }
 
 
-    private fun setButtonBg() {
+    private fun setButtonBg(isStarting: Boolean = false) {
         game?.let {
+
+            if (isStarting) {
+                bottomButtonBG.postValue(STARTING_BG)
+                topButtonBG.postValue(STARTING_BG)
+                return
+            }
 
             //bottom button is white
             if (it.isBottomFirst && it.isWhitePlayerThinking && it.isPaused) {
