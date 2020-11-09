@@ -13,18 +13,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.lumisdinos.chessclock.MainActivity
 import com.lumisdinos.chessclock.R
 import com.lumisdinos.chessclock.common.Event
-import com.lumisdinos.chessclock.common.utils.isClickedShort
 import com.lumisdinos.chessclock.common.utils.isClickedSingle
+import com.lumisdinos.chessclock.data.model.GameState
 import com.lumisdinos.chessclock.databinding.FragmentHomeBinding
 import com.lumisdinos.chessclock.dialogs.DialogListener
 import com.lumisdinos.chessclock.dialogs.getAlertDialog
 import dagger.android.support.DaggerFragment
-import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFragment : DaggerFragment(), DialogListener {
 
-    private val ACTION_TIME_EXPIRED = "110"
+    private val actionTimeExpired = "110"
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -49,9 +48,8 @@ class HomeFragment : DaggerFragment(), DialogListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        viewModel.timeExpired.observe(viewLifecycleOwner, Observer { timeExpired(it) })
+        viewModel.gameState.observe(viewLifecycleOwner, Observer { render(it) })
         viewModel.openDrawer.observe(viewLifecycleOwner, Observer { openDrawer(it) })
-        viewModel.moveSound.observe(viewLifecycleOwner, Observer { moveSound(it) })
     }
 
 
@@ -81,25 +79,32 @@ class HomeFragment : DaggerFragment(), DialogListener {
     }
 
 
-    private fun moveSound(event: Event<Boolean>) {
-        if (isClickedShort()) return
-        event.getContentIfNotHandled()?.let {
-            val mp = MediaPlayer.create(context, R.raw.pawn_move)
-            mp.start()
+    private fun render(gameState: GameState) {
+        moveSound(gameState.moveSound)
+        timeExpired(gameState.timeExpired)
+    }
 
-            mp.setOnCompletionListener(OnCompletionListener {
-                mp.release()
-            })
+
+    private fun moveSound(event: Event<Boolean>) {
+        event.getContentIfNotHandled()?.let {
+            if (it) {
+                val mp = MediaPlayer.create(context, R.raw.pawn_move)
+                mp.start()
+
+                mp.setOnCompletionListener(OnCompletionListener {
+                    mp.release()
+                })
+            }
         }
     }
 
 
     private fun timeExpired(event: Event<String>) {
-        if (isClickedSingle()) return
         event.getContentIfNotHandled()?.let {
+            if (it.isEmpty()) return
             getAlertDialog(
                 requireContext(),
-                ACTION_TIME_EXPIRED,
+                actionTimeExpired,
                 this,
                 getString(R.string.time_is_over),//title
                 String.format(getString(R.string._lost_on_time), it),//message

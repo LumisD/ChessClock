@@ -12,6 +12,7 @@ import com.lumisdinos.chessclock.data.Constants.WHITE_PAUSING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_THINKING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_WAITING_BG
 import com.lumisdinos.chessclock.data.model.Game
+import com.lumisdinos.chessclock.data.model.GameState
 import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepository
 import com.lumisdinos.chessclock.data.repository.GameRepository
 import kotlinx.coroutines.CoroutineScope
@@ -24,19 +25,18 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
     private val gameRepository: GameRepository
 ) : ChessClockLogicRepository {
 
-    override var timeControl = MutableLiveData<String>()
-    override var changedToPauseIcon = MutableLiveData<Boolean>()
-    override var restTimeBottom = MutableLiveData<Long>()
-    override var restTimeTop = MutableLiveData<Long>()
-    override var isBottomPressedFirst = MutableLiveData<Boolean>()
-    override var topButtonBG = MutableLiveData<String>()
-    override var bottomButtonBG = MutableLiveData<String>()
-
-    override var timeExpired = MutableLiveData<Event<String>>()
-    override var moveSound = MutableLiveData<Event<Boolean>>()
-
+    override var gameStateLive = MutableLiveData<GameState>()
+    var gameState: GameState? = null
     var game: Game? = null
     var timer: CountDownTimer? = null
+
+    private fun currentGameState(): GameState = gameState!!
+
+
+    override fun initGame() {
+        gameState = GameState()
+        gameStateLive.value = gameState
+    }
 
 
     override fun createGame() {
@@ -49,17 +49,13 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
                     val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
 
-                    restTimeBottom.postValue(bottomTime)
-                    restTimeTop.postValue(topTime)
-                    isBottomPressedFirst.postValue(it.isBottomFirst)
-
-                    if (it.isPaused) {
-                        changedToPauseIcon.postValue(false)
-                    } else {
-                        changedToPauseIcon.postValue(true)
-                    }
-
-                    timeControl.postValue("${it.min}, ${it.sec}, ${it.inc}")
+                    setStateStarting(
+                        "${it.min}, ${it.sec}, ${it.inc}",
+                        bottomTime,
+                        topTime,
+                        !it.isPaused,
+                        it.isBottomFirst
+                    )
                 }
 
             }
@@ -102,12 +98,13 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
                     val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
 
-                    timeControl.postValue("${it.min}, ${it.sec}, ${it.inc}")
-                    restTimeBottom.postValue(bottomTime)
-                    restTimeTop.postValue(topTime)
+                    setStateTimeControl(
+                        "${it.min}, ${it.sec}, ${it.inc}",
+                        bottomTime,
+                        topTime,
+                        true
+                    )
                     setButtonBg(true)
-
-                    changedToPauseIcon.postValue(true)
                 }
 
             }
@@ -124,7 +121,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
             }
 
             if (isStartingFirstMove(isBottomPressed)) {
-                moveSound.postValue(Event(true))
+                setStateSound(Event(true))
                 return@launch
             }
 
@@ -144,7 +141,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                     if (it.isPaused) {
                         clickPause()
                     } else {
-                        moveSound.postValue(Event(true))
+                        setStateSound(Event(true))
                         handleNewMove()
                     }
                     return@launch
@@ -164,7 +161,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 //start again
                 it.isPaused = false
                 startTimer()
-                changedToPauseIcon.postValue(true)
+                setStatePausedIcon(true)
             } else {
                 //pause time
                 timer?.let {
@@ -173,8 +170,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 timer = null
                 it.isPaused = true
                 //it.pausedStartMillis = System.currentTimeMillis()
-
-                changedToPauseIcon.postValue(false)
+                setStatePausedIcon(false)
             }
 
             setButtonBg()
@@ -241,13 +237,11 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
                     if (restTime < 20_000) {
                         //refresh every 100ms
-                        restTimeBottom.postValue(bottomTime)
-                        restTimeTop.postValue(topTime)
+                        setStateRestTime(bottomTime, topTime)
                     } else {
                         //refresh only every sec
                         if (ticks % 10 == 0) {
-                            restTimeBottom.postValue(bottomTime)
-                            restTimeTop.postValue(topTime)
+                            setStateRestTime(bottomTime, topTime)
                         }
                     }
 
@@ -279,11 +273,8 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
 
             val bottomTime = if (it.isBottomFirst) it.whiteRest else it.blackRest
             val topTime = if (it.isBottomFirst) it.blackRest else it.whiteRest
-            restTimeBottom.postValue(bottomTime)
-            restTimeTop.postValue(topTime)
+            setStateExpired(Event(sideWhichExpired), bottomTime, topTime)
         }
-
-        timeExpired.postValue(Event(sideWhichExpired))
     }
 
 
@@ -298,7 +289,7 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
                 it.isBottomFirst = isBottomFirst
                 it.isPaused = false
 
-                this.isBottomPressedFirst.postValue(isBottomFirst)
+                setStateBottomPressedFirst(isBottomFirst)
                 setButtonBg()
                 startTimer()
 
@@ -314,61 +305,134 @@ class ChessClockLogicRepositoryImpl @Inject constructor(
         game?.let {
 
             if (isStarting) {
-                bottomButtonBG.postValue(STARTING_BG)
-                topButtonBG.postValue(STARTING_BG)
+                setStateButtonBG(STARTING_BG, STARTING_BG)
                 return
             }
 
             //bottom button is white
             if (it.isBottomFirst && it.isWhitePlayerThinking && it.isPaused) {
-                bottomButtonBG.postValue(WHITE_PAUSING_BG)
-                topButtonBG.postValue(BLACK_WAITING_BG)
+                setStateButtonBG(WHITE_PAUSING_BG, BLACK_WAITING_BG)
                 return
             }
 
             if (it.isBottomFirst && it.isWhitePlayerThinking && !it.isPaused) {
-                bottomButtonBG.postValue(WHITE_THINKING_BG)
-                topButtonBG.postValue(BLACK_WAITING_BG)
+                setStateButtonBG(WHITE_THINKING_BG, BLACK_WAITING_BG)
                 return
             }
 
             if (it.isBottomFirst && !it.isWhitePlayerThinking && it.isPaused) {
-                bottomButtonBG.postValue(WHITE_WAITING_BG)
-                topButtonBG.postValue(BLACK_PAUSING_BG)
+                setStateButtonBG(WHITE_WAITING_BG, BLACK_PAUSING_BG)
                 return
             }
 
             if (it.isBottomFirst && !it.isWhitePlayerThinking && !it.isPaused) {
-                bottomButtonBG.postValue(WHITE_WAITING_BG)
-                topButtonBG.postValue(BLACK_THINKING_BG)
+                setStateButtonBG(WHITE_WAITING_BG, BLACK_THINKING_BG)
                 return
             }
 
             //top button is white
             if (!it.isBottomFirst && it.isWhitePlayerThinking && it.isPaused) {
-                bottomButtonBG.postValue(BLACK_WAITING_BG)
-                topButtonBG.postValue(WHITE_PAUSING_BG)
+                setStateButtonBG(BLACK_WAITING_BG, WHITE_PAUSING_BG)
                 return
             }
 
             if (!it.isBottomFirst && it.isWhitePlayerThinking && !it.isPaused) {
-                bottomButtonBG.postValue(BLACK_WAITING_BG)
-                topButtonBG.postValue(WHITE_THINKING_BG)
+                setStateButtonBG(BLACK_WAITING_BG, WHITE_THINKING_BG)
                 return
             }
 
             if (!it.isBottomFirst && !it.isWhitePlayerThinking && it.isPaused) {
-                bottomButtonBG.postValue(BLACK_PAUSING_BG)
-                topButtonBG.postValue(WHITE_WAITING_BG)
+                setStateButtonBG(BLACK_PAUSING_BG, WHITE_WAITING_BG)
                 return
             }
 
             if (!it.isBottomFirst && !it.isWhitePlayerThinking && !it.isPaused) {
-                bottomButtonBG.postValue(BLACK_THINKING_BG)
-                topButtonBG.postValue(WHITE_WAITING_BG)
+                setStateButtonBG(BLACK_THINKING_BG, WHITE_WAITING_BG)
                 return
             }
         }
+    }
+
+
+    private fun setStateTimeControl(
+        timeControl: String,
+        restTimeBottom: Long,
+        restTimeTop: Long,
+        changedToPauseIcon: Boolean
+    ) {
+        gameState = currentGameState().copy(
+            timeControl = timeControl,
+            restTimeBottom = restTimeBottom,
+            restTimeTop = restTimeTop,
+            changedToPauseIcon = changedToPauseIcon
+        )
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStateStarting(
+        timeControl: String,
+        restTimeBottom: Long,
+        restTimeTop: Long,
+        changedToPauseIcon: Boolean,
+        isBottomPressedFirst: Boolean
+    ) {
+        gameState = currentGameState().copy(
+            timeControl = timeControl,
+            restTimeBottom = restTimeBottom,
+            restTimeTop = restTimeTop,
+            changedToPauseIcon = changedToPauseIcon,
+            isBottomPressedFirst = isBottomPressedFirst
+        )
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStateExpired(
+        timeExpired: Event<String>,
+        restTimeBottom: Long,
+        restTimeTop: Long
+    ) {
+        gameState = currentGameState().copy(
+            timeExpired = timeExpired,
+            restTimeBottom = restTimeBottom,
+            restTimeTop = restTimeTop
+        )
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStateRestTime(restTimeBottom: Long, restTimeTop: Long) {
+        gameState =
+            currentGameState().copy(restTimeBottom = restTimeBottom, restTimeTop = restTimeTop)
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStateButtonBG(bottomButtonBG: String, topButtonBG: String) {
+        gameState = currentGameState().copy(
+            bottomButtonBG = bottomButtonBG,
+            topButtonBG = topButtonBG
+        )
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStateBottomPressedFirst(isBottomPressedFirst: Boolean) {
+        gameState = currentGameState().copy(isBottomPressedFirst = isBottomPressedFirst)
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStatePausedIcon(changedToPauseIcon: Boolean) {
+        gameState = currentGameState().copy(changedToPauseIcon = changedToPauseIcon)
+        gameStateLive.postValue(gameState)
+    }
+
+
+    private fun setStateSound(moveSound: Event<Boolean>) {
+        gameState = currentGameState().copy(moveSound = moveSound)
+        gameStateLive.postValue(gameState)
     }
 
 }

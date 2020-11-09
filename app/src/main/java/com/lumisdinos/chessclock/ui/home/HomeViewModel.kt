@@ -4,6 +4,7 @@ import com.lumisdinos.chessclock.common.Event
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.lumisdinos.chessclock.data.model.GameState
 import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepository
 import javax.inject.Inject
 
@@ -14,16 +15,11 @@ class HomeViewModel @Inject constructor(
     private val _openDrawer = MutableLiveData<Event<Boolean>>()
     val openDrawer: LiveData<Event<Boolean>> = _openDrawer
 
-    val timeControl: LiveData<String> = logicRepo.timeControl
-    val changedToPauseIcon: LiveData<Boolean> = logicRepo.changedToPauseIcon
-    val restTimeBottom: LiveData<Long> = logicRepo.restTimeBottom
-    val restTimeTop: LiveData<Long> = logicRepo.restTimeTop
-    var isBottomPressedFirst: LiveData<Boolean> = logicRepo.isBottomPressedFirst
-    val topButtonBG: LiveData<String> = logicRepo.topButtonBG
-    val bottomButtonBG: LiveData<String> = logicRepo.bottomButtonBG
+    val gameState: LiveData<GameState> = logicRepo.gameStateLive
 
-    val moveSound: LiveData<Event<Boolean>> = logicRepo.moveSound
-    val timeExpired: LiveData<Event<String>> = logicRepo.timeExpired
+    init {
+        logicRepo.initGame()
+    }
 
 
     fun getGame() {

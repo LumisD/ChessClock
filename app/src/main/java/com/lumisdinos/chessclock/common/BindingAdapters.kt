@@ -15,7 +15,6 @@ import com.lumisdinos.chessclock.data.Constants.BLACK_WAITING_BG
 import com.lumisdinos.chessclock.data.Constants.CLOCK_PLAYER_TIME_FORMAT
 import com.lumisdinos.chessclock.data.Constants.CLOCK_PLAYER_TIME_FORMAT_DEC
 import com.lumisdinos.chessclock.data.Constants.CLOCK_PLAYER_TIME_FORMAT_LESS_10M
-import com.lumisdinos.chessclock.data.Constants.STARTING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_PAUSING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_THINKING_BG
 import com.lumisdinos.chessclock.data.Constants.WHITE_WAITING_BG
@@ -27,9 +26,8 @@ object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter("timeControlFromGame")
-    fun convertTimeControlFromGame(textView: TextView, timeControlLive: LiveData<String>) {
-        val timeControl = timeControlLive.value
-        if (timeControl.isNullOrEmpty()) {
+    fun convertTimeControlFromGame(textView: TextView, timeControl: String) {
+        if (timeControl.isEmpty()) {
             textView.text = textView.context.getString(R.string.time_control_not_set)
             return
         }
@@ -65,9 +63,8 @@ object BindingAdapters {
     @BindingAdapter("changePausedIcon")
     fun convertChangePausedIcon(
         imageButton: ImageButton,
-        changedToPauseIconLive: LiveData<Boolean>
+        changedToPause: Boolean
     ) {
-        val changedToPause = changedToPauseIconLive.value ?: true
         if (changedToPause) {
             imageButton.setImageResource(R.drawable.ic_pause_black_24dp)
         } else {
@@ -79,8 +76,7 @@ object BindingAdapters {
     @JvmStatic
     @BindingAdapter("restClockTime")
     @SuppressLint("SimpleDateFormat")
-    fun convertRestClockTime(textView: TextView, restTimeLive: LiveData<Long>) {
-        val restTime = restTimeLive.value ?: 0L
+    fun convertRestClockTime(textView: TextView, restTime: Long) {
         if (restTime == 0L) {
             textView.text = textView.context.getString(R.string.default_time)
             return
@@ -102,15 +98,10 @@ object BindingAdapters {
 
     @JvmStatic
     @BindingAdapter("buttonsBG")
-    fun setButtonsBG(imageView: ImageView, buttonBGLive: LiveData<String>) {
-        val buttonBG = buttonBGLive.value ?: 0
+    fun setButtonsBG(imageView: ImageView, buttonBG: String) {
         val context = imageView.context
 
         when (buttonBG) {
-            STARTING_BG -> {
-                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_gray_button)
-                imageView.setImageResource(0)
-            }
             WHITE_THINKING_BG -> {
                 imageView.background = ContextCompat.getDrawable(context, R.drawable.border_white_thinking)
                 imageView.setImageResource(R.drawable.chess_paun_176x286)
@@ -135,14 +126,17 @@ object BindingAdapters {
                 imageView.background = ContextCompat.getDrawable(context, R.drawable.border_black_paused)
                 imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
             }
+            else -> {//STARTING_BG
+                imageView.background = ContextCompat.getDrawable(context, R.drawable.border_gray_button)
+                imageView.setImageResource(0)
+            }
         }
     }
 
 
     @JvmStatic
     @BindingAdapter("buttonTextColor")
-    fun convertButtonTextColor(textView: TextView, isBottomFirstLive: LiveData<Boolean>) {
-        val isBottomFirst = isBottomFirstLive.value ?: true
+    fun convertButtonTextColor(textView: TextView, isBottomFirst: Boolean) {
         val tag = textView.tag
         val context = textView.context
         if (isBottomFirst) {
