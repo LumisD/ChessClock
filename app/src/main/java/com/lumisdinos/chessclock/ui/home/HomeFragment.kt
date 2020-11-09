@@ -50,10 +50,12 @@ class HomeFragment : DaggerFragment(), DialogListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+
+        viewModel.gameState.observe(viewLifecycleOwner, Observer { render(it) })
         (activity as MainActivity).navigationItemSelected.observe(viewLifecycleOwner,
             { setChosenTimeControl(it) })
-        viewModel.gameState.observe(viewLifecycleOwner, Observer { render(it) })
-        viewModel.openDrawer.observe(viewLifecycleOwner, Observer { openDrawer(it) })
+
+        viewDataBinding.showMenuIv.setOnClickListener { (openDrawer()) }
     }
 
 
@@ -81,12 +83,10 @@ class HomeFragment : DaggerFragment(), DialogListener {
     }
 
 
-    private fun openDrawer(event: Event<Boolean>) {
+    private fun openDrawer() {
         if (isClickedSingle()) return
-        event.getContentIfNotHandled()?.let {
-            val mainActivity = activity as MainActivity
-            mainActivity.openDrawer()
-        }
+        val mainActivity = activity as MainActivity
+        mainActivity.openDrawer()
     }
 
 

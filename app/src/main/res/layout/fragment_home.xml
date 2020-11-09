@@ -76,7 +76,6 @@
                 android:background="@drawable/border_green_no_bg"
                 android:contentDescription="@string/drag"
                 android:foreground="@drawable/ripple"
-                android:onClick="@{() -> viewModel.clickShowMenu()}"
                 android:paddingStart="@dimen/space_normal"
                 android:paddingEnd="@dimen/space_normal"
                 android:src="@drawable/ic_chevron_right_black_24dp" />

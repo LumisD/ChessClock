@@ -12,9 +12,6 @@ class HomeViewModel @Inject constructor(
     private val logicRepo: ChessClockLogicRepository
 ) : ViewModel() {
 
-    private val _openDrawer = MutableLiveData<Event<Boolean>>()
-    val openDrawer: LiveData<Event<Boolean>> = _openDrawer
-
     val gameState: LiveData<GameState> = logicRepo.gameStateLive
 
     init {
@@ -49,11 +46,6 @@ class HomeViewModel @Inject constructor(
 
     fun clickOnPause() {
         logicRepo.clickPause()
-    }
-
-
-    fun clickShowMenu() {
-        _openDrawer.postValue(Event(true))
     }
 
 }
