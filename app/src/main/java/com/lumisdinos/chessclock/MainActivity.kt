@@ -6,15 +6,14 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
 import com.lumisdinos.chessclock.data.Constants._1
 import com.lumisdinos.chessclock.data.Constants._10
 import com.lumisdinos.chessclock.data.Constants._15_10
@@ -33,9 +32,10 @@ import com.lumisdinos.chessclock.dialogs.DialogListener
 import com.lumisdinos.chessclock.dialogs.alertDialogToSetCustomTime
 import com.lumisdinos.chessclock.ui.home.HomeFragment
 import timber.log.Timber
-import java.lang.Exception
 
-class MainActivity : AppCompatActivity(), DialogListener {
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+    DialogListener {
 
     private val ACTION_SET_CUSTOM_TIME = "100"
 
@@ -43,23 +43,6 @@ class MainActivity : AppCompatActivity(), DialogListener {
     private lateinit var navController: NavController
     private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
-
-    private lateinit var customTimeMenuItem: MenuItem
-
-    private lateinit var time_15_10MenuItem: MenuItem
-    private lateinit var time_5_5MenuItem: MenuItem
-    private lateinit var time_3_2MenuItem: MenuItem
-    private lateinit var time_2_1MenuItem: MenuItem
-    private lateinit var time_1_1MenuItem: MenuItem
-    private lateinit var time_45_45MenuItem: MenuItem
-
-    private lateinit var time_60minMenuItem: MenuItem
-    private lateinit var time_30minMenuItem: MenuItem
-    private lateinit var time_20minMenuItem: MenuItem
-    private lateinit var time_10minMenuItem: MenuItem
-    private lateinit var time_5minMenuItem: MenuItem
-    private lateinit var time_3minMenuItem: MenuItem
-    private lateinit var time_1minMenuItem: MenuItem
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +57,7 @@ class MainActivity : AppCompatActivity(), DialogListener {
         navController = navHostFragment.navController
 
         navigationView.setupWithNavController(navController)
-        initializeMenuItemsAndSetListeners()
+        navigationView.setNavigationItemSelectedListener(this)
 
         val view = viewDataBinding.root
         setContentView(view)
@@ -86,107 +69,43 @@ class MainActivity : AppCompatActivity(), DialogListener {
         return true
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        drawerLayout.close()
+        val time: String
 
-    private fun initializeMenuItemsAndSetListeners() {
-        customTimeMenuItem = navigationView.menu.findItem(R.id.customTime)
+        when (item.itemId) {
 
-        time_15_10MenuItem = navigationView.menu.findItem(R.id.t_15_10)
-        time_5_5MenuItem = navigationView.menu.findItem(R.id.t_5_5)
-        time_3_2MenuItem = navigationView.menu.findItem(R.id.t_3_2)
-        time_2_1MenuItem = navigationView.menu.findItem(R.id.t_2_1)
-        time_1_1MenuItem = navigationView.menu.findItem(R.id.t_1_1)
-        time_45_45MenuItem = navigationView.menu.findItem(R.id.t_45_45)
+            R.id.t_15_10 -> { time = _15_10 }
+            R.id.t_5_5 -> { time = _5_5 }
+            R.id.t_3_2 -> { time = _3_2 }
+            R.id.t_2_1 -> { time = _2_1 }
+            R.id.t_1_1 -> { time = _1_1 }
+            R.id.t_45_45 -> { time = _45_45 }
+            R.id.t_60 -> { time = _60 }
+            R.id.t_30 -> { time = _30 }
+            R.id.t_20 -> { time = _20 }
+            R.id.t_10 -> { time = _10 }
+            R.id.t_5 -> { time = _5 }
+            R.id.t_3 -> { time = _3 }
+            R.id.t_1 -> { time = _1 }
 
-        time_60minMenuItem = navigationView.menu.findItem(R.id.t_60)
-        time_30minMenuItem = navigationView.menu.findItem(R.id.t_30)
-        time_20minMenuItem = navigationView.menu.findItem(R.id.t_20)
-        time_10minMenuItem = navigationView.menu.findItem(R.id.t_10)
-        time_5minMenuItem = navigationView.menu.findItem(R.id.t_5)
-        time_3minMenuItem = navigationView.menu.findItem(R.id.t_3)
-        time_1minMenuItem = navigationView.menu.findItem(R.id.t_1)
+            else -> {//customTime
+                alertDialogToSetCustomTime(
+                    this,
+                    LayoutInflater.from(this),//inflater
+                    ACTION_SET_CUSTOM_TIME,//action
+                    this,
+                    getString(R.string.custom_time),//title
+                    getString(R.string.set_min_sec_inc),//message
+                    getString(R.string.ok),
+                    getString(R.string.cancel)
+                ).show()
+                time = ""
+            }
 
-        customTimeMenuItem.setOnMenuItemClickListener {
-            Timber.d("qwer setTimeMenuItem tOnMenuItemClick")
-            drawerLayout.close()
-            alertDialogToSetCustomTime(
-                this,
-                LayoutInflater.from(this),//inflater
-                ACTION_SET_CUSTOM_TIME,//action
-                this,
-                getString(R.string.custom_time),//title
-                getString(R.string.set_min_sec_inc),//message
-                getString(R.string.ok),
-                getString(R.string.cancel)
-            ).show()
-            true
         }
-
-        time_15_10MenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _15_10)
-            true
-        }
-        time_5_5MenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _5_5)
-            true
-        }
-        time_3_2MenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _3_2)
-            true
-        }
-        time_2_1MenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _2_1)
-            true
-        }
-        time_1_1MenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _1_1)
-            true
-        }
-        time_45_45MenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _45_45)
-            true
-        }
-
-        time_60minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _60)
-            true
-        }
-        time_30minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _30)
-            true
-        }
-        time_20minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _20)
-            true
-        }
-        time_10minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _10)
-            true
-        }
-        time_5minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _5)
-            true
-        }
-        time_3minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _3)
-            true
-        }
-        time_1minMenuItem.setOnMenuItemClickListener {
-            drawerLayout.close()
-            refreshSomeFragment(navController.currentDestination, _1)
-            true
-        }
+        refreshSomeFragment(navController.currentDestination, time)
+        return true
     }
 
 
@@ -197,7 +116,7 @@ class MainActivity : AppCompatActivity(), DialogListener {
 
     @SuppressLint("RestrictedApi")
     fun refreshSomeFragment(destination: NavDestination?, time: String) {
-        if (destination == null) return
+        if (time.isEmpty() || destination == null) return
         try {
             val displayName = destination.displayName//com.lumisdinos.projection:id/newTable
             val index = displayName.indexOfLast { c -> c.toString() == "/" }
@@ -229,11 +148,11 @@ class MainActivity : AppCompatActivity(), DialogListener {
     //  -- DialogListener --
 
     override fun onPositiveDialogClick(result: List<String>) {
-        when(result[0]) {
+        when (result[0]) {
             ACTION_SET_CUSTOM_TIME -> {
                 refreshSomeFragment(navController.currentDestination, result[1])
             }
-            else -> {}
+            else -> { }
         }
     }
 
