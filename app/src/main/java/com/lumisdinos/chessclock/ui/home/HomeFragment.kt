@@ -17,13 +17,15 @@ import com.lumisdinos.chessclock.common.utils.isClickedSingle
 import com.lumisdinos.chessclock.data.model.GameState
 import com.lumisdinos.chessclock.databinding.FragmentHomeBinding
 import com.lumisdinos.chessclock.dialogs.DialogListener
+import com.lumisdinos.chessclock.dialogs.alertDialogToSetCustomTime
 import com.lumisdinos.chessclock.dialogs.getAlertDialog
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 class HomeFragment : DaggerFragment(), DialogListener {
 
-    private val actionTimeExpired = "110"
+    private val actionSetCustomTime = "101"
+    private val actionTimeExpired = "102"
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -48,6 +50,8 @@ class HomeFragment : DaggerFragment(), DialogListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+        (activity as MainActivity).navigationItemSelected.observe(viewLifecycleOwner,
+            { setChosenTimeControl(it) })
         viewModel.gameState.observe(viewLifecycleOwner, Observer { render(it) })
         viewModel.openDrawer.observe(viewLifecycleOwner, Observer { openDrawer(it) })
     }
@@ -65,8 +69,15 @@ class HomeFragment : DaggerFragment(), DialogListener {
     }
 
 
-    fun setChosenTimeControl(timeControl: String) {
-        viewModel.setChosenTimeControl(timeControl)
+    private fun setChosenTimeControl(event: Event<String>) {
+        if (isClickedSingle()) return
+        event.getContentIfNotHandled()?.let {
+            if (it == getString(R.string.custom_time)) {
+                showDialogToSetCustomTime()
+            } else {
+                viewModel.setChosenTimeControl(it)
+            }
+        }
     }
 
 
@@ -115,9 +126,30 @@ class HomeFragment : DaggerFragment(), DialogListener {
     }
 
 
+    private fun showDialogToSetCustomTime() {
+        alertDialogToSetCustomTime(
+            requireContext(),
+            LayoutInflater.from(requireContext()),
+            actionSetCustomTime,//action
+            this,
+            getString(R.string.custom_time),//title
+            getString(R.string.set_min_sec_inc),//message
+            getString(R.string.ok),
+            getString(R.string.cancel)
+        ).show()
+    }
+
+
     //  -- DialogListener --
 
     override fun onPositiveDialogClick(result: List<String>) {
+        when (result[0]) {
+            actionSetCustomTime -> {
+                viewModel.setChosenTimeControl(result[1])
+            }
+            else -> {
+            }
+        }
     }
 
     override fun onNegativeDialogClick(result: List<String>) {

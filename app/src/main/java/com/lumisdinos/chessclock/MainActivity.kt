@@ -1,19 +1,17 @@
 package com.lumisdinos.chessclock
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.lumisdinos.chessclock.common.Event
 import com.lumisdinos.chessclock.data.Constants._1
 import com.lumisdinos.chessclock.data.Constants._10
 import com.lumisdinos.chessclock.data.Constants._15_10
@@ -28,21 +26,17 @@ import com.lumisdinos.chessclock.data.Constants._5
 import com.lumisdinos.chessclock.data.Constants._5_5
 import com.lumisdinos.chessclock.data.Constants._60
 import com.lumisdinos.chessclock.databinding.ActivityMainBinding
-import com.lumisdinos.chessclock.dialogs.DialogListener
-import com.lumisdinos.chessclock.dialogs.alertDialogToSetCustomTime
-import com.lumisdinos.chessclock.ui.home.HomeFragment
-import timber.log.Timber
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    DialogListener {
-
-    private val ACTION_SET_CUSTOM_TIME = "100"
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var viewDataBinding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
+
+    private val _navigationItemSelected = MutableLiveData<Event<String>>()
+    val navigationItemSelected: LiveData<Event<String>> = _navigationItemSelected
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawerLayout.close()
         val time: String
@@ -90,21 +85,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.t_1 -> { time = _1 }
 
             else -> {//customTime
-                alertDialogToSetCustomTime(
-                    this,
-                    LayoutInflater.from(this),//inflater
-                    ACTION_SET_CUSTOM_TIME,//action
-                    this,
-                    getString(R.string.custom_time),//title
-                    getString(R.string.set_min_sec_inc),//message
-                    getString(R.string.ok),
-                    getString(R.string.cancel)
-                ).show()
-                time = ""
+                time = getString(R.string.custom_time)
             }
 
         }
-        refreshSomeFragment(navController.currentDestination, time)
+        _navigationItemSelected.value = Event(time)
         return true
     }
 
@@ -112,55 +97,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun openDrawer() {
         drawerLayout.open()
     }
-
-
-    @SuppressLint("RestrictedApi")
-    fun refreshSomeFragment(destination: NavDestination?, time: String) {
-        if (time.isEmpty() || destination == null) return
-        try {
-            val displayName = destination.displayName//com.lumisdinos.projection:id/newTable
-            val index = displayName.indexOfLast { c -> c.toString() == "/" }
-
-            if (index == -1) return
-            val name = displayName.substring(index + 1)
-            if (getString(R.string.nav_home).equals(name, ignoreCase = true)) {
-                val homeFragment = getCurrentFragment()
-                if (homeFragment != null && homeFragment is HomeFragment) {
-                    homeFragment.setChosenTimeControl(time)
-                }
-            }
-        } catch (e: Exception) {
-            Timber.d("Exception: %s", e.message)
-        }
-    }
-
-
-    private fun getCurrentFragment(): Fragment? {
-        val currentNavHost = supportFragmentManager.findFragmentById(R.id.navHostFragment)
-        val currentFragmentClassName =
-            (navController.currentDestination as FragmentNavigator.Destination).className
-        return currentNavHost?.childFragmentManager?.fragments?.filterNotNull()?.find {
-            it.javaClass.name == currentFragmentClassName
-        }
-    }
-
-
-    //  -- DialogListener --
-
-    override fun onPositiveDialogClick(result: List<String>) {
-        when (result[0]) {
-            ACTION_SET_CUSTOM_TIME -> {
-                refreshSomeFragment(navController.currentDestination, result[1])
-            }
-            else -> { }
-        }
-    }
-
-    override fun onNegativeDialogClick(result: List<String>) {
-    }
-
-    override fun onNeutralDialogClick(result: List<String>) {
-    }
-
 
 }
