@@ -1,13 +1,13 @@
 package com.lumisdinos.chessclock.ui.home
 
-import com.lumisdinos.chessclock.common.Event
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lumisdinos.chessclock.data.model.GameState
 import com.lumisdinos.chessclock.data.repository.ChessClockLogicRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@HiltViewModel
 class HomeViewModel @Inject constructor(
     private val logicRepo: ChessClockLogicRepository
 ) : ViewModel() {

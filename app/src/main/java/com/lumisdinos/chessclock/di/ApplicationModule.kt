@@ -12,16 +12,19 @@ import com.lumisdinos.chessclock.data.GameRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
+@InstallIn(SingletonComponent::class)
 @Module(includes = [ApplicationModuleBinds::class])
 object ApplicationModule {
 
-    @JvmStatic
-    @Singleton
     @Provides
-    fun provideDataBase(context: Context): Database {
+    @Singleton
+    fun provideDataBase(@ApplicationContext context: Context): Database {
         return Room.databaseBuilder(
             context.applicationContext,
             Database::class.java,
@@ -29,22 +32,20 @@ object ApplicationModule {
         ).build()
     }
 
-    @JvmStatic
-    @Singleton
     @Provides
+    @Singleton
     fun provideDaoDB(db: Database) = db.daoDB()
 
-
-    @JvmStatic
-    @Singleton
     @Provides
-    fun providePreferences(context: Context): SharedPreferences {
+    @Singleton
+    fun providePreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences("games_preferences", MODE_PRIVATE)
     }
 
 }
 
 
+@InstallIn(SingletonComponent::class)
 @Module
 abstract class ApplicationModuleBinds {
 

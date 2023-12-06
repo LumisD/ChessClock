@@ -1,4 +1,4 @@
-package com.lumisdinos.chessclock
+package com.lumisdinos.chessclock.ui
 
 import android.os.Bundle
 import android.view.Menu
@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.lumisdinos.chessclock.R
 import com.lumisdinos.chessclock.common.Event
 import com.lumisdinos.chessclock.data.Constants._1
 import com.lumisdinos.chessclock.data.Constants._10
@@ -26,11 +27,14 @@ import com.lumisdinos.chessclock.data.Constants._5
 import com.lumisdinos.chessclock.data.Constants._5_5
 import com.lumisdinos.chessclock.data.Constants._60
 import com.lumisdinos.chessclock.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private lateinit var viewDataBinding: ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
+    val binding get() = _binding!!
     private lateinit var navController: NavController
     private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
@@ -41,10 +45,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewDataBinding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
 
-        navigationView = viewDataBinding.navView
-        drawerLayout = viewDataBinding.drawerLayout
+        navigationView = binding.navView
+        drawerLayout = binding.drawerLayout
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
@@ -53,8 +57,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setupWithNavController(navController)
         navigationView.setNavigationItemSelectedListener(this)
 
-        val view = viewDataBinding.root
+        val view = binding.root
         setContentView(view)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 

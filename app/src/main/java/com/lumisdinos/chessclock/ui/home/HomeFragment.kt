@@ -1,61 +1,59 @@
 package com.lumisdinos.chessclock.ui.home
 
-import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.lumisdinos.chessclock.MainActivity
+import com.lumisdinos.chessclock.ui.MainActivity
 import com.lumisdinos.chessclock.R
 import com.lumisdinos.chessclock.common.Event
+import com.lumisdinos.chessclock.common.utils.convertButtonTextColor
+import com.lumisdinos.chessclock.common.utils.convertChangePausedIcon
+import com.lumisdinos.chessclock.common.utils.convertRestClockTime
+import com.lumisdinos.chessclock.common.utils.convertTimeControlFromGame
 import com.lumisdinos.chessclock.common.utils.isClickedSingle
+import com.lumisdinos.chessclock.common.utils.setButtonsBG
 import com.lumisdinos.chessclock.data.model.GameState
 import com.lumisdinos.chessclock.databinding.FragmentHomeBinding
 import com.lumisdinos.chessclock.dialogs.DialogListener
 import com.lumisdinos.chessclock.dialogs.alertDialogToSetCustomTime
 import com.lumisdinos.chessclock.dialogs.getAlertDialog
-import dagger.android.support.DaggerFragment
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-class HomeFragment : DaggerFragment(), DialogListener {
+@AndroidEntryPoint
+class HomeFragment : Fragment(), DialogListener {
 
     private val actionSetCustomTime = "101"
     private val actionTimeExpired = "102"
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
-    @Inject
-    lateinit var preference: SharedPreferences
-
-    private lateinit var viewDataBinding: FragmentHomeBinding
-    private val viewModel by viewModels<HomeViewModel> { viewModelFactory }
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        viewDataBinding = FragmentHomeBinding.inflate(inflater, container, false)
-        viewDataBinding.viewModel = viewModel
-        return viewDataBinding.root
+    ): View {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        subscribeUi(binding)
+        return binding.root
     }
 
-
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-
         viewModel.gameState.observe(viewLifecycleOwner, Observer { render(it) })
-        (activity as MainActivity).navigationItemSelected.observe(viewLifecycleOwner,
-            { setChosenTimeControl(it) })
+        (activity as MainActivity).navigationItemSelected.observe(viewLifecycleOwner
+        ) { setChosenTimeControl(it) }
 
-        viewDataBinding.showMenuIv.setOnClickListener { (openDrawer()) }
+        binding.showMenuIv.setOnClickListener { (openDrawer()) }
     }
 
 
@@ -68,6 +66,31 @@ class HomeFragment : DaggerFragment(), DialogListener {
     override fun onPause() {
         super.onPause()
         viewModel.saveGame()
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun subscribeUi(binding: FragmentHomeBinding) {
+
+        binding.topButtonView.setOnClickListener { viewModel.clickOnTopButtonView() }
+        binding.deleteIb.setOnClickListener { viewModel.clickOnPause() }
+        binding.bottomButtonView.setOnClickListener { viewModel.clickOnBottomButtonView() }
+
+        viewModel.gameState.observe(viewLifecycleOwner) {
+            setButtonsBG(binding.topButtonView, it.topButtonBG)
+            setButtonsBG(binding.bottomButtonView, it.bottomButtonBG)
+            convertButtonTextColor(binding.topTimeTv, it.isBottomPressedFirst)
+            convertButtonTextColor(binding.bottomTimeTv, it.isBottomPressedFirst)
+            convertTimeControlFromGame(binding.timeTv, it.timeControl)
+            convertChangePausedIcon(binding.deleteIb, it.changedToPauseIcon)
+            convertRestClockTime(binding.bottomTimeTv, it.restTimeBottom)
+            convertRestClockTime(binding.topTimeTv, it.restTimeTop)
+        }
+
     }
 
 

@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.lumisdinos.chessclock.ui.home.HomeViewModel" />
-    </data>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
-        tools:context=".ui.home.HomeFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".ui.home.HomeFragment">
 
         <ImageView
             android:id="@+id/topButtonView"
@@ -24,10 +14,8 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            android:onClick="@{() -> viewModel.clickOnTopButtonView()}"
             android:padding="@dimen/space_xxlarge"
             android:rotation="180"
-            app:buttonsBG="@{viewModel.gameState.topButtonBG}"
             app:layout_constraintBottom_toTopOf="@+id/guidelineUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,11 +32,9 @@
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:buttonTextColor="@{viewModel.gameState.isBottomPressedFirst}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/topButtonView"
-            app:restClockTime="@{viewModel.gameState.restTimeTop}" />
+            app:layout_constraintTop_toTopOf="@+id/topButtonView" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -91,7 +77,6 @@
                 android:textStyle="bold"
                 android:background="@drawable/border_green_no_bg"
                 android:gravity="center_vertical"
-                app:timeControlFromGame="@{viewModel.gameState.timeControl}"
                 android:visibility="gone"/>
 
             <ImageButton
@@ -100,8 +85,6 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border_green_no_bg"
                 android:foreground="@drawable/ripple"
-                android:onClick="@{() -> viewModel.clickOnPause()}"
-                app:changePausedIcon="@{viewModel.gameState.changedToPauseIcon}"
                 tools:ignore="ContentDescription" />
 
 
@@ -123,13 +106,11 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple"
-            android:onClick="@{() -> viewModel.clickOnBottomButtonView()}"
             android:padding="@dimen/space_xxlarge"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guidelineDown"
-            app:buttonsBG="@{viewModel.gameState.bottomButtonBG}"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -141,12 +122,8 @@
             android:textColor="@color/colorBlack"
             android:textSize="@dimen/clock_text_size"
             android:textStyle="bold"
-            app:buttonTextColor="@{viewModel.gameState.isBottomPressedFirst}"
             app:layout_constraintBottom_toBottomOf="@+id/bottomButtonView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:restClockTime="@{viewModel.gameState.restTimeBottom}" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</layout>
