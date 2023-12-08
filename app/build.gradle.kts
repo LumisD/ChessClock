@@ -65,9 +65,6 @@ dependencies {
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
 
-    //Picasso
-    implementation("com.squareup.picasso:picasso:2.71828")
-
     //Timber
     implementation("com.jakewharton.timber:timber:4.7.1")
 
