@@ -11,6 +11,10 @@
 
     <dimen name="space_xxlarge">64dp</dimen>
 
+    <dimen name="material_text_headline">24sp</dimen>
+    <dimen name="material_text_subhead">16sp</dimen>
+    <dimen name="material_text_body">14sp</dimen>
+
     <!--    Table margin/padding-->
     <!--    table_cell_margin is used for program calculations-->
     <!--    table_cell_width_step is used for up/down cell width-->

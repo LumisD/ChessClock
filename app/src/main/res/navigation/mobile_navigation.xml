@@ -9,6 +9,29 @@
         android:name="com.lumisdinos.chessclock.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_privacy_policy"
+            app:destination="@id/nav_privacy_policy"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_privacy_policy"
+        android:name="com.lumisdinos.chessclock.ui.policy.PolicyFragment"
+        android:label="@string/privacy_policy"
+        tools:layout="@layout/fragment_privacy" >
+        <action
+            android:id="@+id/action_privacy_policy_to_home"
+            app:destination="@id/nav_home"
+            app:popUpTo="@+id/nav_home"
+            app:popUpToInclusive="true"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
     </fragment>
 
 </navigation>

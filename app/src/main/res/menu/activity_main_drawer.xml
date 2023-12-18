@@ -81,16 +81,11 @@
             android:title="@string/_1" />
     </group>
 
-    <!--        <item-->
-    <!--            android:id="@+id/nav_home"-->
-    <!--            android:icon="@drawable/ic_baseline_timer_24"-->
-    <!--            android:title="@string/menu_home" />-->
-    <!--        <item-->
-    <!--            android:id="@+id/nav_gallery"-->
-    <!--            android:icon="@drawable/ic_menu_gallery"-->
-    <!--            android:title="@string/menu_gallery" />-->
-    <!--        <item-->
-    <!--            android:id="@+id/nav_slideshow"-->
-    <!--            android:icon="@drawable/ic_menu_slideshow"-->
-    <!--            android:title="@string/menu_slideshow" />-->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_privacy_policy"
+            android:icon="@drawable/ic_outline_privacy_tip_24"
+            android:title="@string/menu_privacy_policy" />
+    </group>
+
 </menu>

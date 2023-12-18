@@ -40,4 +40,20 @@
     <string name="sec">sec</string>
     <string name="inc">inc</string>
     <string name="default_time">0:00.0</string>
+
+    <!-- Privacy Policy -->
+    <string name="menu_privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privicy_title">The Privacy Policy of "ChessClock"</string>
+    <string name="privicy_collect">What information collect the app</string>
+    <string name="privicy_collect_text">The app "ChessClock" doesn\'t collect any information about user, or his location, it doesn\'t collect server or HTTP logs of any kind. This application doesn\'t require any permissions like internet, bluetooth, etc.
+The app doesn\'t collect any persistent identifiers (like the Google ID).</string>
+    <string name="privicy_use">How the app uses the information</string>
+    <string name="privicy_use_text">As the app doesn\'t collect any information - it doesn\'t use it any way</string>
+    <string name="privicy_share">What information share the app</string>
+    <string name="privicy_share_text">As the app doesn\'t collect any information - it doesn\'t share it any way</string>
+    <string name="privicy_doing">What the app doing</string>
+    <string name="privicy_doing_text">The app works like a regular chess clock - you can set the time with or without increments and press a button to start the clock. The app doesn\'t do anything else</string>
+    <string name="privacy_policy_link">Link to <a href="https://sites.google.com/view/chessclock2/home">The Privacy Policy</a></string>
+
 </resources>

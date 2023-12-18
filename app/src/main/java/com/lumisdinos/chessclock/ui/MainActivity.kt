@@ -76,6 +76,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawerLayout.close()
+
+        when (item.itemId) {
+            R.id.nav_privacy_policy -> {
+                navController.navigate(R.id.action_home_to_privacy_policy)
+                return true
+            }
+            else -> {
+                if (navController.currentDestination?.id != R.id.nav_home) {
+                    navController.navigate(R.id.action_privacy_policy_to_home)
+                }
+            }
+        }
+
         val time: String
 
         when (item.itemId) {
